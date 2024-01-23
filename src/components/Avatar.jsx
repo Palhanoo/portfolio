@@ -19,13 +19,15 @@ export function Avatar(props) {
   const { animations: typingAnimation } = useFBX("./animations/Typing.fbx")
   const { animations: standingAnimation } = useFBX("./animations/Standing.fbx")
   const { animations: fallingAnimation } = useFBX("./animations/Falling.fbx")
+  const { animations: dancingAnimation } = useFBX("./animations/Dancing.fbx")
 
   typingAnimation[0].name = "Typing"
   standingAnimation[0].name = "Standing"
   fallingAnimation[0].name = "Falling"
+  dancingAnimation[0].name = "Dancing"
 
   const anims = useMemo(
-    () => [typingAnimation[0], standingAnimation[0], fallingAnimation[0]],
+    () => [typingAnimation[0], standingAnimation[0], fallingAnimation[0], dancingAnimation[0]],
     []
   )
 

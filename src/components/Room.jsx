@@ -7,15 +7,15 @@ import { useFrame } from "@react-three/fiber";
 
 export function Room(props) {
     const { section } = props
-    const { nodes, materials } = useGLTF("./models/Room.glb");
-    const texture = useTexture("./textures/Baking.jpg")
+    const { nodes, materials } = useGLTF("./models/RoomBaked.glb");
+    const texture = useTexture("./textures/RoomBaked.jpg")
     texture.flipY = false
     const textureMaterial = new THREE.MeshStandardMaterial({
         map: texture,
         transparent: true,
         opacity: 1,
     })
-    const textureMaterial2 = new THREE.MeshStandardMaterial()
+    const glassGeometry = new THREE.BoxGeometry(1, 1, 1)
     const glassMaterial = new THREE.MeshStandardMaterial({
         color: 0x000000,
         metalness: 0.9,
@@ -35,7 +35,7 @@ export function Room(props) {
     useFrame(() => {
         textureMaterial.opacity = textureOpacity.get()
         glassMaterial.opacity = glassOpacity.get()
-    
+
     })
 
     return (
@@ -79,7 +79,7 @@ export function Room(props) {
                 receiveShadow
                 geometry={nodes.Keyboard1.geometry}
                 material={textureMaterial}
-                position={[-0.153, 1.193, -0.872]}
+                position={[-0.179, 1.193, -0.872]}
             />
             <mesh
                 castShadow
@@ -153,31 +153,32 @@ export function Room(props) {
                 castShadow
                 receiveShadow
                 geometry={nodes.Plane.geometry}
-                material={textureMaterial2}
+                material={textureMaterial}
+                scale={2.066}
+            />
+                        <mesh
+                castShadow
+                receiveShadow
+                geometry={glassGeometry}
+                material={glassMaterial}
+                position={[-0.92, 1.396, -1.979]}
+                scale={[0.958, 3, 0.036]}
             />
             <mesh
                 castShadow
                 receiveShadow
-                geometry={nodes.Glass.geometry}
+                geometry={glassGeometry}
                 material={glassMaterial}
-                position={[-1.113, 1.396, -1.979]}
-                scale={[0.558, 1.147, 0.036]}
+                position={[0.123, 1.396, -1.979]}
+                scale={[0.958, 3, 0.036]}
             />
             <mesh
                 castShadow
                 receiveShadow
-                geometry={nodes.Glass.geometry}
+                geometry={glassGeometry}
                 material={glassMaterial}
-                position={[0.113, 1.396, -1.979]}
-                scale={[0.558, 1.147, 0.036]}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={nodes.Glass.geometry}
-                material={glassMaterial}
-                position={[1.323, 1.396, -1.979]}
-                scale={[0.558, 1.147, 0.036]}
+                position={[1.19, 1.396, -1.979]}
+                scale={[0.958, 3, 0.036]}
             />
         </motion.group>
     );

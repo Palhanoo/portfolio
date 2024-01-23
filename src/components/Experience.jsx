@@ -37,7 +37,7 @@ const Experience = (props) => {
   const { animation } = useControls({
     animation: {
       value: "Typing",
-      options: ["Typing", "Standing", "Falling"],
+      options: ["Typing", "Standing", "Falling", "Dancing"],
     }
   })
 
@@ -47,7 +47,7 @@ const Experience = (props) => {
       <Environment preset="sunset" />
       <motion.group
         rotation-y={-Math.PI / 4}
-        scale={[0.9, 0.9, 0.9]}
+        scale={[1.2, 1.2, 1.2]}
         position={[1.5, 2, 3]}
         animate={{
           y: section === 0 ? 0 : -1,
@@ -104,10 +104,10 @@ const Experience = (props) => {
         </Float>
         <Avatar
           // animation={ani}
-          animation={section === 0 ? "Falling" : "Standing"}
-          // rotation-z={Math.PI - 0.6}
-          // position={[1.55, 1.9, 12.8]}
-          position={section === 0 ? [5, 0, 0] : [0, 0, 4]}
+          animation={section === 0 && menuOpened ? "Typing" : section === 0 ? "Falling" : "Dancing"}
+          rotation-z={section === 0 && menuOpened ? Math.PI - 0.6 : ""}
+          position={section === 0 && menuOpened ? [1.4, 2.24, 12.8] : section === 0 ? [5, 3, 0] : section === 1 ? [0, 1, 6]: [0, 0, 4] }
+          // position={section === 0 ? [5, 3, 0] : [0, 0, 4]}
           section={section} />
       </motion.group>
       <spotLight castShadow intensity={10} position={[3, 5, 0]} />
