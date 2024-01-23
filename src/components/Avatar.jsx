@@ -3,9 +3,10 @@ import { useAnimations, useFBX, useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useControls } from "leva";
 import * as THREE from "three";
+import { motion } from "framer-motion-3d";
 
 export function Avatar(props) {
-  const { animation } = props
+  const { animation, section } = props
   const avatarRef = useRef()
   const { headFollow, cursorFollow, wireframe } = useControls({
     headFollow: false,
@@ -43,7 +44,7 @@ export function Avatar(props) {
   useEffect(() => {
     actions[animation].reset().fadeIn(0.5).play();
     return () => {
-      if(actions[animation]) {
+      if (actions[animation]) {
         actions[animation].reset().fadeOut(0.5);
       }
     };
@@ -56,7 +57,11 @@ export function Avatar(props) {
   }, [wireframe])
 
   return (
-    <group rotation-x={-Math.PI * 0.5} {...props} ref={avatarRef} dispose={null}>
+    <motion.group
+
+      // scale={[1, 1, 1]}
+      // animate={{ scale: section === 0 ? 1 : 0 }}
+      rotation-x={-Math.PI * 0.5} {...props} ref={avatarRef} dispose={null}>
       <primitive object={nodes.Hips} />
       <skinnedMesh
         name="EyeLeft"
@@ -115,7 +120,7 @@ export function Avatar(props) {
         material={materials.Wolf3D_Outfit_Top}
         skeleton={nodes.Wolf3D_Outfit_Top.skeleton}
       />
-    </group>
+    </motion.group>
   );
 }
 

@@ -1,12 +1,19 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useGLTF, useTexture } from "@react-three/drei";
 import * as THREE from 'three'
+import { motion } from "framer-motion-3d";
+import { animate, useMotionValue } from "framer-motion";
+import { useFrame } from "@react-three/fiber";
+
 export function Room(props) {
+    const { section } = props
     const { nodes, materials } = useGLTF("./models/Room.glb");
     const texture = useTexture("./textures/Baking.jpg")
     texture.flipY = false
     const textureMaterial = new THREE.MeshStandardMaterial({
-        map: texture
+        map: texture,
+        transparent: true,
+        opacity: 1,
     })
     const textureMaterial2 = new THREE.MeshStandardMaterial()
     const glassMaterial = new THREE.MeshStandardMaterial({
@@ -17,8 +24,25 @@ export function Room(props) {
         transparent: true
     })
 
+    const textureOpacity = useMotionValue(0)
+    const glassOpacity = useMotionValue(0)
+
+    useEffect(() => {
+        animate(textureOpacity, section === 0 ? 1 : 0, 0)
+        animate(glassOpacity, section === 0 ? 0.3 : 0, 0)
+    }, [section])
+
+    useFrame(() => {
+        textureMaterial.opacity = textureOpacity.get()
+        glassMaterial.opacity = glassOpacity.get()
+    
+    })
+
     return (
-        <group {...props} dispose={null}>
+        <motion.group {...props} dispose={null}
+            scale={[0, 0, 0]}
+            animate={{ scale: section === 0 ? 1 : 0 }}
+        >
             <mesh
                 castShadow
                 receiveShadow
@@ -147,7 +171,7 @@ export function Room(props) {
                 position={[0.113, 1.396, -1.979]}
                 scale={[0.558, 1.147, 0.036]}
             />
-                        <mesh
+            <mesh
                 castShadow
                 receiveShadow
                 geometry={nodes.Glass.geometry}
@@ -155,7 +179,7 @@ export function Room(props) {
                 position={[1.323, 1.396, -1.979]}
                 scale={[0.558, 1.147, 0.036]}
             />
-        </group>
+        </motion.group>
     );
 }
 
