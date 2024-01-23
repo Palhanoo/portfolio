@@ -162,23 +162,23 @@ export function Room(props) {
                 geometry={glassGeometry}
                 material={glassMaterial}
                 position={[-0.92, 1.396, -1.979]}
-                scale={[0.958, 3, 0.036]}
+                scale={[0.98, 3, 0.036]}
             />
             <mesh
                 castShadow
                 receiveShadow
                 geometry={glassGeometry}
                 material={glassMaterial}
-                position={[0.123, 1.396, -1.979]}
-                scale={[0.958, 3, 0.036]}
+                position={[0.13, 1.396, -1.979]}
+                scale={[0.98, 3, 0.036]}
             />
             <mesh
                 castShadow
                 receiveShadow
                 geometry={glassGeometry}
                 material={glassMaterial}
-                position={[1.19, 1.396, -1.979]}
-                scale={[0.958, 3, 0.036]}
+                position={[1.21, 1.396, -1.979]}
+                scale={[0.98, 3, 0.036]}
             />
         </motion.group>
     );
