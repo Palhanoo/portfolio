@@ -1,16 +1,30 @@
 import React from 'react'
+import { motion } from 'framer-motion'
 
 const Section = (props) => {
     const { children } = props;
 
     return (
-        <section className={`
+        <motion.section
+            initial={{
+                opacity: 0,
+                y: 50,
+            }}
+            whileInView={{
+                opacity: 1,
+                y: 0,
+                transition: {
+                    duration: 1,
+                    delay: 0.3,
+                }
+            }}
+            className={`
             h-screen w-screen p-8 max-w-screen-2xl 
             mx-auto flex flex-col items-start 
             justify-center
         `}>
             {children}
-        </section>
+        </motion.section>
     )
 }
 
@@ -37,16 +51,43 @@ const AboutSection = () => {
                 <br />
                 <span className="bg-white px-1 italic">Bruno Palhano</span>
             </h1>
-            <p className="text-lg text-gray-600 mt-4">
+            <motion.p
+                initial={{
+                    opacity: 0,
+                    y: 25,
+
+                }}
+                whileInView={{
+                    opacity: 1,
+                    y: 0,
+                }}
+                transition={{
+                    duration: 1,
+                    delay: 1
+                }}
+                className="text-lg text-gray-600 mt-4">
                 I make things for the web.
                 <br />
                 Including 3d apps
-            </p>
-            <button
+            </motion.p>
+            <motion.button
+                initial={{
+                    opacity: 0,
+                    y: 25,
+
+                }}
+                whileInView={{
+                    opacity: 1,
+                    y: 0,
+                }}
+                transition={{
+                    duration: 1,
+                    delay: 2
+                }}
                 className={`bg-indigo-600 text-white py-4 px-8 rounded-lg font-bold text-lg mt-16`}
             >
                 Contact Me
-            </button>
+            </motion.button>
         </Section>
     )
 }
@@ -101,27 +142,77 @@ const languages = [
 const SkillSection = () => {
     return (
         <Section>
-            <div>
+            <motion.div whileInView={"visible"}>
                 <h2 className="text-5xl font-bold">Skills</h2>
                 <div className="mt-8 space-y-4">
                     {skills.map((skill, idx) => (
                         <div key={idx} className="w-64">
-                            <h3 className="text-xl font-bold text-gray-800">{skill.title}</h3>
+                            <motion.h3
+                                initial={{
+                                    opacity: 0,
+                                }}
+                                variants={{
+                                    visible: {
+                                        opacity: 1,
+                                        transition: {
+                                            duration: 1,
+                                            delay: 1 + idx * 0.2,
+                                        }
+                                    }
+                                }}
+
+                                className="text-xl font-bold text-gray-800">{skill.title}</motion.h3>
                             <div className="h-2 w-full bg-gray-200 rounded-full mt-2">
-                                <div style={{ width: `${skill.level}%` }} className="h-full bg-indigo-500 rounded-full" />
+                                <motion.div
+                                    initial={{
+                                        scaleX: 0,
+                                        originX: 0,
+                                    }}
+                                    whileInView={{
+                                        scaleX: 1
+                                    }}
+                                    transition={{
+                                        duration: 1,
+                                        delay: 1 + idx * 0.2
+                                    }}
+                                    style={{ width: `${skill.level}%` }} className="h-full bg-indigo-500 rounded-full" />
                             </div>
                         </div>
                     ))}
                 </div>
-            </div>
+            </motion.div>
             <div>
                 <h2 className="text-5xl font-bold mt-10">Languages</h2>
                 <div className="mt-8 space-y-4">
                     {languages.map((language, idx) => (
                         <div key={idx} className="w-64">
-                            <h3 className="text-xl font-bold text-gray-800">{language.title}</h3>
+                            <motion.h3
+                                initial={{
+                                    opacity: 0,
+                                }}
+                                whileInView={{
+                                    opacity: 1,
+                                    transition: {
+                                        duration: 1,
+                                        delay: 1.5 + idx * 0.2,
+                                    }
+                                }}
+                                className="text-xl font-bold text-gray-800">
+                                {language.title}
+                            </motion.h3>
                             <div className="h-2 w-full bg-gray-200 rounded-full mt-2">
-                                <div style={{ width: `${language.level}%` }} className="h-full bg-indigo-500 rounded-full" />
+                                <motion.div
+                                    initial={{
+                                        scaleX: 0,
+                                        originX: 0,
+                                    }}
+                                    whileInView={{
+                                        scaleX: 1
+                                    }}
+                                    transition={{
+                                        duration: 1,
+                                        delay: 1.5 + idx * 0.2
+                                    }} style={{ width: `${language.level}%` }} className="h-full bg-indigo-500 rounded-full" />
                             </div>
                         </div>
                     ))}
@@ -141,11 +232,11 @@ const ContactSection = () => {
                         Name
                     </label>
                     <input type="text" id="name" className="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 p-3" />
-                    <label for="email" className="font-medium text-gray-900 block mb-1 mt-4">
+                    <label htmlFor="email" className="font-medium text-gray-900 block mb-1 mt-4">
                         Email
                     </label>
                     <input type="email" id="email" className="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 p-3" />
-                    <label for="message" className="font-medium text-gray-900 block mb-1 mt-4">
+                    <label htmlFor="message" className="font-medium text-gray-900 block mb-1 mt-4">
                         Message
                     </label>
                     <textarea id="message" className="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 p-3" rows="4" />

@@ -15,10 +15,10 @@ const Experience = () => {
 
   return (
     <>
-      {/* <OrbitControls /> */}
+      <OrbitControls />
       <Environment preset="sunset" />
-      <Room />
       <group position-y={-1}>
+      <Room />
         <ContactShadows
           opacity={0.5}
           scale={10}
@@ -27,7 +27,7 @@ const Experience = () => {
           resolution={256}
           color={'#000000'}
         />
-        <Avatar animation={animation} rotation-z={Math.PI} position={[-0.25, 1.5, -0.2]} />
+        <Avatar animation={animation} rotation-z={Math.PI} position={[-0.25, .5, -0.2]} />
       </group>
     </>
   )
