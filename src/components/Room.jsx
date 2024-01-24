@@ -7,7 +7,7 @@ import { useFrame } from "@react-three/fiber";
 
 export function Room(props) {
     const { section } = props
-    const { nodes, materials } = useGLTF("./models/RoomBaked.glb");
+    const { nodes, materials } = useGLTF("./models/RoomAnimated.glb");
     const texture = useTexture("./textures/RoomBaked.jpg")
     texture.flipY = false
     const textureMaterial = new THREE.MeshStandardMaterial({

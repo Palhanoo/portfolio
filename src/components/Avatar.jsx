@@ -16,7 +16,7 @@ export function Avatar(props) {
 
   const { nodes, materials } = useGLTF("./models/me.glb");
 
-  const { animations: typingAnimation } = useFBX("./animations/Typing.fbx")
+  const { animations: typingAnimation } = useFBX("./animations/TypingSmall.fbx")
   const { animations: standingAnimation } = useFBX("./animations/Standing.fbx")
   const { animations: fallingAnimation } = useFBX("./animations/Falling.fbx")
   const { animations: dancingAnimation } = useFBX("./animations/Dancing.fbx")
@@ -66,6 +66,7 @@ export function Avatar(props) {
       rotation-x={-Math.PI * 0.5} {...props} ref={avatarRef} dispose={null}>
       <primitive object={nodes.Hips} />
       <skinnedMesh
+        frustumCulled={false}
         name="EyeLeft"
         geometry={nodes.EyeLeft.geometry}
         material={materials.Wolf3D_Eye}
@@ -74,6 +75,7 @@ export function Avatar(props) {
         morphTargetInfluences={nodes.EyeLeft.morphTargetInfluences}
       />
       <skinnedMesh
+        frustumCulled={false}
         name="EyeRight"
         geometry={nodes.EyeRight.geometry}
         material={materials.Wolf3D_Eye}
@@ -82,6 +84,7 @@ export function Avatar(props) {
         morphTargetInfluences={nodes.EyeRight.morphTargetInfluences}
       />
       <skinnedMesh
+        frustumCulled={false}
         name="Wolf3D_Head"
         geometry={nodes.Wolf3D_Head.geometry}
         material={materials.Wolf3D_Skin}
@@ -90,6 +93,7 @@ export function Avatar(props) {
         morphTargetInfluences={nodes.Wolf3D_Head.morphTargetInfluences}
       />
       <skinnedMesh
+        frustumCulled={false}
         name="Wolf3D_Teeth"
         geometry={nodes.Wolf3D_Teeth.geometry}
         material={materials.Wolf3D_Teeth}
@@ -98,26 +102,31 @@ export function Avatar(props) {
         morphTargetInfluences={nodes.Wolf3D_Teeth.morphTargetInfluences}
       />
       <skinnedMesh
+        frustumCulled={false}
         geometry={nodes.Wolf3D_Hair.geometry}
         material={materials.Wolf3D_Hair}
         skeleton={nodes.Wolf3D_Hair.skeleton}
       />
       <skinnedMesh
+        frustumCulled={false}
         geometry={nodes.Wolf3D_Body.geometry}
         material={materials.Wolf3D_Body}
         skeleton={nodes.Wolf3D_Body.skeleton}
       />
       <skinnedMesh
+        frustumCulled={false}
         geometry={nodes.Wolf3D_Outfit_Bottom.geometry}
         material={materials.Wolf3D_Outfit_Bottom}
         skeleton={nodes.Wolf3D_Outfit_Bottom.skeleton}
       />
       <skinnedMesh
+        frustumCulled={false}
         geometry={nodes.Wolf3D_Outfit_Footwear.geometry}
         material={materials.Wolf3D_Outfit_Footwear}
         skeleton={nodes.Wolf3D_Outfit_Footwear.skeleton}
       />
       <skinnedMesh
+        frustumCulled={false}
         geometry={nodes.Wolf3D_Outfit_Top.geometry}
         material={materials.Wolf3D_Outfit_Top}
         skeleton={nodes.Wolf3D_Outfit_Top.skeleton}
