@@ -30,11 +30,11 @@ const Section = (props) => {
     )
 }
 
-const Interface = () => {
+const Interface = ({ setSection }) => {
     return (
         <div className='flex flex-col items-center w-screen'>
 
-            <AboutSection />
+            <AboutSection setSection={setSection} />
             <SkillSection />
             <ProjectSection />
             <ContactSection />
@@ -69,7 +69,7 @@ const ProjectSection = () => {
     )
 }
 
-const AboutSection = () => {
+const AboutSection = ({ setSection }) => {
     return (
 
         <Section>
@@ -111,6 +111,7 @@ const AboutSection = () => {
                     duration: 1,
                     delay: 2
                 }}
+                onClick={() => setSection(3)}
                 className={`bg-indigo-600 text-white py-4 px-8 rounded-lg font-bold text-lg mt-16`}
             >
                 Contact Me
@@ -170,7 +171,7 @@ const SkillSection = () => {
     return (
         <Section>
             <motion.div whileInView={"visible"}>
-                <h2 className="text-5xl font-bold">Skills</h2>
+                <h2 className="text-5xl font-bold text-white">Skills</h2>
                 <div className="mt-8 space-y-4">
                     {skills.map((skill, idx) => (
                         <div key={idx} className="w-64">
@@ -188,7 +189,7 @@ const SkillSection = () => {
                                     }
                                 }}
 
-                                className="text-xl font-bold text-gray-800">{skill.title}</motion.h3>
+                                className="text-xl font-bold text-gray-100">{skill.title}</motion.h3>
                             <div className="h-2 w-full bg-gray-200 rounded-full mt-2">
                                 <motion.div
                                     initial={{
@@ -209,7 +210,7 @@ const SkillSection = () => {
                 </div>
             </motion.div>
             <div>
-                <h2 className="text-5xl font-bold mt-10">Languages</h2>
+                <h2 className="text-5xl font-bold mt-10 text-white">Languages</h2>
                 <div className="mt-8 space-y-4">
                     {languages.map((language, idx) => (
                         <div key={idx} className="w-64">
@@ -224,7 +225,7 @@ const SkillSection = () => {
                                         delay: 1.5 + idx * 0.2,
                                     }
                                 }}
-                                className="text-xl font-bold text-gray-800">
+                                className="text-xl font-bold text-gray-100">
                                 {language.title}
                             </motion.h3>
                             <div className="h-2 w-full bg-gray-200 rounded-full mt-2">

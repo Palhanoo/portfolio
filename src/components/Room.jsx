@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { useGLTF, useTexture } from "@react-three/drei";
+import { useGLTF, useTexture, useVideoTexture } from "@react-three/drei";
 import * as THREE from 'three'
 import { motion } from "framer-motion-3d";
 import { animate, useMotionValue } from "framer-motion";
@@ -7,7 +7,10 @@ import { useFrame } from "@react-three/fiber";
 
 export function Room(props) {
     const { section } = props
-    const { nodes, materials } = useGLTF("./models/RoomAnimated.glb");
+    const { nodes, materials } = useGLTF("./models/Room.glb");
+    const textureCode = useVideoTexture("./textures/Bake.mp4")
+    const textureCode2 = useVideoTexture("./textures/youtubeBake.mp4")
+    // textureCode.flipY = false
     const texture = useTexture("./textures/RoomBaked.jpg")
     texture.flipY = false
     const textureMaterial = new THREE.MeshStandardMaterial({
@@ -143,6 +146,27 @@ export function Room(props) {
                 rotation={[-Math.PI / 2, 0, 0.295]}
             />
             <mesh
+                name="MonitorScreen"
+                castShadow
+                receiveShadow
+                geometry={nodes.MonitorScreen.geometry}
+                position={[-0.368, 1.342, -1.22]}
+                rotation={[-Math.PI / 2, 0, 0.295]}
+            >
+                <meshBasicMaterial map={textureCode} toneMapped={false} />
+            </mesh>
+            <mesh
+                name="LaptopScreen"
+                castShadow
+                receiveShadow
+                geometry={nodes.LaptopScreen.geometry}
+                position={[0.461, 1.227, -1.296]}
+                rotation={[-1.721, 0.129, -0.613]}
+                scale={[0.666, 0.703, 0.793]}
+            >
+                <meshBasicMaterial map={textureCode2} toneMapped={false} />
+            </mesh>
+            <mesh
                 castShadow
                 receiveShadow
                 geometry={nodes.Mouse.geometry}
@@ -156,7 +180,7 @@ export function Room(props) {
                 material={textureMaterial}
                 scale={2.066}
             />
-                        <mesh
+            <mesh
                 castShadow
                 receiveShadow
                 geometry={glassGeometry}

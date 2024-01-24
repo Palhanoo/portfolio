@@ -7,8 +7,8 @@ import { motion } from 'framer-motion-3d'
 import { useFrame, useThree } from '@react-three/fiber'
 import { animate, useMotionValue } from 'framer-motion'
 import { framerMotionConfig } from '../config'
-import * as THREE from 'three'
 import Projects from './Projects'
+import Background from './Background'
 
 const Experience = (props) => {
   const { menuOpened } = props
@@ -76,6 +76,7 @@ const Experience = (props) => {
 
   return (
     <>
+    <Background />
       {/* <OrbitControls /> */}
       <motion.group
         animate={"" + section}
