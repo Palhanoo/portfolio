@@ -4,7 +4,6 @@ import gsap from 'gsap';
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 const ScrollManager = (props) => {
-    const [y, setY] = useState(window.scrollY);
     const { section, onSectionChange } = props
     const data = useScroll();
     const lastScroll = useRef(0)
@@ -13,19 +12,6 @@ const ScrollManager = (props) => {
     data.fill.classList.add("top-0"); //for some reason scroll dont work properly on usescroll
     data.fill.classList.add("absolute"); //for some reason scroll dont work properly on usescroll
 
-
-
-    const handleNavigation = useCallback(
-        e => {
-            const window = e.currentTarget;
-            if (y > window.scrollY) {
-                console.log("scrolling up");
-            } else if (y < window.scrollY) {
-                console.log("scrolling down");
-            }
-            setY(window.scrollY);
-        }, [y]
-    );
 
     useEffect(() => {
         gsap.to(data.el, {
@@ -38,13 +24,6 @@ const ScrollManager = (props) => {
                 isAnimating.current = false
             }
         })
-
-        setY(window.scrollY);
-        window.addEventListener("scroll", handleNavigation);
-
-        return () => {
-            window.removeEventListener("scroll", handleNavigation);
-        };
     }, [section])
 
     useFrame(() => {
