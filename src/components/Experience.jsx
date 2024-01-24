@@ -8,6 +8,7 @@ import { useFrame, useThree } from '@react-three/fiber'
 import { animate, useMotionValue } from 'framer-motion'
 import { framerMotionConfig } from '../config'
 import * as THREE from 'three'
+import Projects from './Projects'
 
 const Experience = (props) => {
   const { menuOpened } = props
@@ -191,6 +192,7 @@ const Experience = (props) => {
       <spotLight castShadow intensity={10} position={[3, 5, 0]} />
       {/* <OrbitControls /> */}
       <Leva hidden />
+      <Projects />
     </>
   )
 }
