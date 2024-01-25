@@ -1,9 +1,21 @@
 import { ValidationError, useForm } from "@formspree/react";
 import Section from "../components/Section";
+import { atom, useAtom } from "jotai";
+import { useEffect } from "react";
 
+export const EmailSubmitted = atom(false)
 const ContactSection = () => {
     const [state, handleSubmit] = useForm("xayrqbar");
-
+    const [emailSubmitted, setEmailSubmitted] = useAtom(EmailSubmitted)
+    
+    useEffect(() => {
+        if (state.succeeded) {
+            setEmailSubmitted(true)
+        }
+        setTimeout(() => {
+            setEmailSubmitted(false)
+        }, 200)
+    }, [state.succeeded])
     return (
         <Section>
             <h2 className="text-3xl md:text-5xl font-bold">Contact Me</h2>
