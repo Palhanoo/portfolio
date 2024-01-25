@@ -55,7 +55,8 @@ export function Avatar(props) {
       actions[animation].clampWhenFinished = true
       actions[animation].loop = THREE.LoopOnce
       mixer.addEventListener("finished", () => {
-        actions["Standing"].fadeIn(0.5).play();
+        actions["Landing"].fadeOut(0.5)
+        actions["Standing"].reset().fadeIn(0.5).play();
       })
     }
     // if (animation === "ThumbsUp") {
@@ -65,9 +66,10 @@ export function Avatar(props) {
     //     actions[animation].loop = THREE.LoopOnce
     //     mixer.addEventListener("finished", () => {
     //       actions["Standing"].fadeIn(0.5).play();
+    //       actions["ThumbsUp"].fadeOut(0.5)
     //     })
     //   }, 1000)
-    //   // actions["Standing"].reset().fadeOut(0.5)
+    //   actions["Standing"].reset().fadeIn(0.5)
     // }
 
     return () => {

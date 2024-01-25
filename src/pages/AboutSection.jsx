@@ -8,7 +8,7 @@ const AboutSection = (props) => {
             <h1 className='text-3xl md:text-5xl font-extrabold leading-snug mt-8 md:mt-0'>
                 Hi, I'm
                 <br />
-                <span className="bg-white px-1 italic">Bruno Palhano</span>
+                <p className="bg-white/30 px-1 italic backdrop-blur-xl">Bruno Palhano</p>
             </h1>
             <motion.p
                 initial={{
@@ -25,9 +25,9 @@ const AboutSection = (props) => {
                     delay: 1
                 }}
                 className="text-lg text-gray-600 mt-4">
-                I make things for the web.
+                I'm a fullstack developer
                 <br />
-                Including 3d apps
+                and gamer in the free time
             </motion.p>
             <motion.button
                 initial={{
