@@ -1,4 +1,5 @@
 import React from 'react'
+import MenuButton from './MenuButton'
 
 const Menu = (props) => {
     const { onSectionChange, menuOpened, setMenuOpened } = props
@@ -26,18 +27,6 @@ const Menu = (props) => {
                 </div>
             </div>
         </>
-    )
-}
-
-const MenuButton = (props) => {
-    const { label, onClick } = props;
-    return (
-        <button
-            onClick={onClick}
-            className="text-2xl font-bold cursor-pointer hover:text-indigo-600 transition-colors"
-        >
-            {label}
-        </button>
     )
 }
 
