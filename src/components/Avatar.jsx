@@ -6,9 +6,9 @@ import * as THREE from "three";
 import { motion } from "framer-motion-3d";
 
 export function Avatar(props) {
-  const { animation, section } = props
+  const { animation, section, wireframe } = props
   const avatarRef = useRef()
-  const { headFollow, cursorFollow, wireframe } = useControls({
+  const { headFollow, cursorFollow } = useControls({
     headFollow: false,
     cursorFollow: false,
     wireframe: false
@@ -136,3 +136,7 @@ export function Avatar(props) {
 }
 
 useGLTF.preload("./models/me.glb");
+useFBX.preload("./animations/TypingSmall.fbx")
+useFBX.preload("./animations/Standing.fbx")
+useFBX.preload("./animations/Falling.fbx")
+useFBX.preload("./animations/Dancing.fbx")

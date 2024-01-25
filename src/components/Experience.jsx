@@ -18,8 +18,15 @@ const Experience = (props) => {
   const { viewport } = useThree()
   const data = useScroll()
 
+  const isMobile = window.innerWidth < 768
+  const responsiveRatio = viewport.width / 12;
+  const roomScaleRatio = Math.max(0.5, Math.min(1.2 * responsiveRatio, 1.2));
+  const avatarScaleRatio = Math.max(0.5, Math.min(1 * responsiveRatio, 1));
+
   const cameraPositionX = useMotionValue()
   const cameraLookAtX = useMotionValue()
+
+  const characterGroup = useRef()
 
   useEffect(() => {
     animate(cameraPositionX, menuOpened ? -5 : 0, {
@@ -44,8 +51,10 @@ const Experience = (props) => {
 
     //get the position
     // const position = new THREE.Vector3()
-    // characterContainerAboutRef.current.getWorldPosition(position)
-    // // console.log([position.x, position.y, position.z]);
+    if (section === 0) {
+      characterContainerAboutRef.current.getWorldPosition(characterGroup.current.position)
+    }
+    // console.log([position.x, position.y, position.z]);
 
 
     // //get the rotation
@@ -70,37 +79,38 @@ const Experience = (props) => {
   useEffect(() => {
     setCharacterAnimation("Falling")
     setTimeout(() => {
-      setCharacterAnimation(section === 0 ? "Typing" : "Dancing")    
+      setCharacterAnimation(section === 0 ? "Typing" : "Standing")
     }, 300)
   }, [section])
 
   return (
     <>
-    <Background />
+      <Background />
       {/* <OrbitControls /> */}
       <motion.group
         animate={"" + section}
+        // scale={[roomScaleRatio, roomScaleRatio, roomScaleRatio]}
         transition={{
           duration: 0.8
         }}
         variants={{
           0: {
-            scaleX: 1.2,
-            scaleY: 1.2,
-            scaleZ: 1.2,
+            scaleX: roomScaleRatio,
+            scaleY: roomScaleRatio,
+            scaleZ: roomScaleRatio,
           },
           1: {
             y: -viewport.height + 0.5,
-            x: 0,
+            x: isMobile ? 0.3 : 0,
             z: 7,
             rotateX: 0,
-            rotateY: 0,
+            rotateY: isMobile ? - Math.PI / 2 : 0,
             rotateZ: 0,
           },
           2: {
-            x: -2,
+            x: isMobile ? -1.3 : -2,
             y: -viewport.height * 2 + 0.5,
-            z: 0,
+            z: 1,
             rotateX: 0,
             rotateY: Math.PI / 2,
             rotateZ: 0,
@@ -115,22 +125,26 @@ const Experience = (props) => {
           }
         }}
         rotation={[-3.141592653589793, 0.9593981633974485, 3.141592653589793]}
-        position={[1.4949088311754568, 0.6012, 2.6402240697322847]}
+        // position={[1.4949088311754568, 0.6012, 2.6402240697322847]}
+        ref={characterGroup}
       >
         <Avatar
           animation={characterAnimation}
           section={section}
+          wireframe={section === 1}
         />
       </motion.group>
       <Environment preset="sunset" />
       <motion.group
         rotation-y={-Math.PI / 4}
-        scale={[1.2, 1.2, 1.2]}
-        position={[1.5, 2, 3]}
+        scale={[roomScaleRatio, roomScaleRatio, roomScaleRatio]}
+        position={isMobile ? [0, -viewport.height / 6, 3] : [1.5, 2, 3]}
         animate={{
-          y: section === 0 ? 0 : -1,
+          y: isMobile ? -viewport.height / 6 : section === 0 ? 0 : -1,
         }}
-
+        transition={{
+          duration: 1.2
+        }}
       >
         <Room section={section} />
         <group
@@ -147,9 +161,9 @@ const Experience = (props) => {
       <motion.group
         animate={{
           z: section === 1 ? 0 : -10,
-          y: section === 1 ? -viewport.height : -1.5,
+          y: section === 1 ? -viewport.height : (isMobile ? -viewport.height : -1.5 * roomScaleRatio),
         }}
-        position={[0, -1.5, -10]}>
+        position={[0, isMobile ? -viewport.height : -1.5 * roomScaleRatio, -10]}>
         <directionalLight position={[-5, 3, 5]} intensity={0.4} />
         <Float>
           <mesh position={[1, -3, -15]} scale={[2, 2, 2]}>

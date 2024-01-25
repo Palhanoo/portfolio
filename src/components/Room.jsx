@@ -31,8 +31,12 @@ export function Room(props) {
     const glassOpacity = useMotionValue(0)
 
     useEffect(() => {
-        animate(textureOpacity, section === 0 ? 1 : 0, 0)
-        animate(glassOpacity, section === 0 ? 0.3 : 0, 0)
+        animate(textureOpacity, section === 0 ? 1 : 0, 0, {
+            duration: 0.8
+        })
+        animate(glassOpacity, section === 0 ? 0.3 : 0, 0, {
+            duration: 0.8
+        })
     }, [section])
 
     useFrame(() => {
@@ -209,3 +213,4 @@ export function Room(props) {
 }
 
 useGLTF.preload("./models/Room.glb");
+useTexture.preload("./textures/RoomBaked.jpg")
