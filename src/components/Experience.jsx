@@ -1,4 +1,4 @@
-import { ContactShadows, Environment, Float, MeshDistortMaterial, MeshWobbleMaterial, OrbitControls, Sky, useScroll } from '@react-three/drei'
+import { Environment, Float, MeshDistortMaterial, MeshWobbleMaterial, useScroll } from '@react-three/drei'
 import React, { useEffect, useRef, useState } from 'react'
 import { Avatar } from './Avatar'
 import { Leva, useControls } from 'leva'
@@ -6,8 +6,8 @@ import { Room } from './Room'
 import { motion } from 'framer-motion-3d'
 import { useFrame, useThree } from '@react-three/fiber'
 import { animate, useMotionValue } from 'framer-motion'
-import { framerMotionConfig } from '../config'
-import Projects from './Projects'
+import { framerMotionConfig } from '../utils/config'
+import Projects from './Projects/Projects'
 import Background from './Background'
 
 const Experience = (props) => {
@@ -56,7 +56,6 @@ const Experience = (props) => {
     }
     // console.log([position.x, position.y, position.z]);
 
-
     // //get the rotation
     // const quaternion = new THREE.Quaternion();
     // characterContainerAboutRef.current.getWorldQuaternion(quaternion);
@@ -86,7 +85,6 @@ const Experience = (props) => {
   return (
     <>
       <Background />
-      {/* <OrbitControls /> */}
       <motion.group
         animate={"" + section}
         // scale={[roomScaleRatio, roomScaleRatio, roomScaleRatio]}
@@ -153,7 +151,6 @@ const Experience = (props) => {
           position={[-0.215, 0.501, -0.209]}
           rotation={[-Math.PI, 0.174, -Math.PI]}
         >
-
         </group>
       </motion.group>
 
