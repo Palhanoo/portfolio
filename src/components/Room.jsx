@@ -6,6 +6,15 @@ import { animate, useMotionValue } from "framer-motion";
 import { useFrame } from "@react-three/fiber";
 
 export function Room(props) {
+    const mew = useRef()
+    const mewSound = new Audio("./sounds/mew.mp3")
+    const eeveeSound = new Audio("./sounds/eevee.mp3")
+    const mewCry = () => {
+        mewSound.play()
+    }
+    const eeveeCry = () => {
+        eeveeSound.play()
+    }
     const { section } = props
     const { nodes, materials } = useGLTF("./models/Room.glb");
     const textureCode = useVideoTexture("./textures/Bake.mp4")
@@ -74,6 +83,7 @@ export function Room(props) {
                 rotation={[Math.PI, -1.567, Math.PI]}
             />
             <mesh
+                onClick={eeveeCry}
                 castShadow
                 receiveShadow
                 geometry={nodes.Eevee.geometry}
@@ -126,6 +136,8 @@ export function Room(props) {
                 position={[-1.545, 1.702, 0.191]}
             />
             <mesh
+                ref={mew}
+                onClick={mewCry}
                 castShadow
                 receiveShadow
                 geometry={nodes.Mew.geometry}

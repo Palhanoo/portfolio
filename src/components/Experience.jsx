@@ -98,7 +98,7 @@ const Experience = (props) => {
             scaleZ: roomScaleRatio,
           },
           1: {
-            y: -viewport.height + 0.5,
+            y: -viewport.height + 0.7,
             x: isMobile ? 0.3 : 0,
             z: 7,
             rotateX: 0,
