@@ -76,9 +76,13 @@ const Experience = (props) => {
   })
 
   useEffect(() => {
+    // if (section === 0) setCharacterAnimation(() => "Typing")
+    // if (section === 1) setCharacterAnimation(() => "Landing")
+    // if (section === 2) setCharacterAnimation(() => "Standing")
+    // if (section === 3) setCharacterAnimation(() => "Standing")
     setCharacterAnimation("Falling")
     setTimeout(() => {
-      setCharacterAnimation(section === 0 ? "Typing" : "Standing")
+        setCharacterAnimation(section === 0 ? "Typing" : "Standing")
     }, 300)
   }, [section])
 
@@ -93,14 +97,13 @@ const Experience = (props) => {
         }}
         variants={{
           0: {
-            scaleX: roomScaleRatio,
-            scaleY: roomScaleRatio,
-            scaleZ: roomScaleRatio,
+            scale: roomScaleRatio,
           },
           1: {
             y: -viewport.height + 0.7,
             x: isMobile ? 0.3 : 0,
-            z: 7,
+            z: 4,
+            scale: roomScaleRatio,
             rotateX: 0,
             rotateY: isMobile ? - Math.PI / 2 : 0,
             rotateZ: 0,
@@ -109,14 +112,16 @@ const Experience = (props) => {
             x: isMobile ? -1.3 : -2,
             y: -viewport.height * 2 + 0.5,
             z: 1,
+            scale: roomScaleRatio,
             rotateX: 0,
             rotateY: Math.PI / 2,
             rotateZ: 0,
           },
           3: {
             x: 0.3,
-            y: -viewport.height * 3 + 1,
+            y: -viewport.height * 3 + 2,
             z: 8.5,
+            scale: 0.5,
             rotateX: 0,
             rotateY: -Math.PI / 4,
             rotateZ: 0

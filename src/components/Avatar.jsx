@@ -4,10 +4,14 @@ import { useFrame } from "@react-three/fiber";
 import { useControls } from "leva";
 import * as THREE from "three";
 import { motion } from "framer-motion-3d";
+import { useAtom } from 'jotai'
+import { EmailSubmitted } from '../pages/ContactSection'
 
 export function Avatar(props) {
   const { animation, section, wireframe } = props
   const avatarRef = useRef()
+  const [emailSubmitted, setEmailSubmitted] = useAtom(EmailSubmitted)
+
   const { headFollow, cursorFollow } = useControls({
     headFollow: false,
     cursorFollow: false,
@@ -20,19 +24,22 @@ export function Avatar(props) {
   const { animations: standingAnimation } = useFBX("./animations/Standing.fbx")
   const { animations: fallingAnimation } = useFBX("./animations/Falling.fbx")
   const { animations: dancingAnimation } = useFBX("./animations/Dancing.fbx")
+  const { animations: thumbsUpAnimation } = useFBX("./animations/ThumbsUpFull.fbx")
+  // const { animations: landingAnimation } = useFBX("./animations/Landing.fbx")
 
   typingAnimation[0].name = "Typing"
   standingAnimation[0].name = "Standing"
   fallingAnimation[0].name = "Falling"
   dancingAnimation[0].name = "Dancing"
+  thumbsUpAnimation[0].name = "ThumbsUp"
+  // landingAnimation[0].name = "Landing"
 
   const anims = useMemo(
-    () => [typingAnimation[0], standingAnimation[0], fallingAnimation[0], dancingAnimation[0]],
+    () => [typingAnimation[0], standingAnimation[0], fallingAnimation[0], dancingAnimation[0], thumbsUpAnimation[0]],
     []
   )
 
-  const { actions } = useAnimations(anims, avatarRef)
-
+  const { actions, mixer } = useAnimations(anims, avatarRef)
   useFrame((state) => {
     if (headFollow) {
       avatarRef.current.getObjectByName("Head").lookAt(state.camera.position)
@@ -45,12 +52,31 @@ export function Avatar(props) {
 
   useEffect(() => {
     actions[animation].reset().fadeIn(0.5).play();
+    // if (animation === "Landing") {
+
+    //   actions["Landing"].setLoop(THREE.LoopOnce, 1)
+    //   actions["Landing"].clampWhenFinished = true
+      
+    //   setTimeout(() => {
+    //     actions[animation].reset().fadeIn(0.5).play();
+    //     // actions["Standing"].play();
+    //   }, 2000)
+    // }
     return () => {
       if (actions[animation]) {
         actions[animation].reset().fadeOut(0.5);
       }
     };
   }, [animation]);
+
+  useEffect(() => {
+    if (emailSubmitted === true) {
+      actions["ThumbsUp"].reset().fadeIn(0.5).play();
+    }
+    setTimeout(() => {
+      actions[animation].reset().fadeIn(0.5).play();
+    }, 4000)
+  }, [emailSubmitted])
 
   useEffect(() => {
     Object.values(materials).forEach((material) => {
@@ -140,3 +166,5 @@ useFBX.preload("./animations/TypingSmall.fbx")
 useFBX.preload("./animations/Standing.fbx")
 useFBX.preload("./animations/Falling.fbx")
 useFBX.preload("./animations/Dancing.fbx")
+useFBX.preload("./animations/ThumbsUpFull.fbx")
+// useFBX.preload("./animations/Landing.fbx")
