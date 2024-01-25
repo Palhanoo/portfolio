@@ -9,6 +9,8 @@ import { animate, useMotionValue } from 'framer-motion'
 import { framerMotionConfig } from '../utils/config'
 import Projects from './Projects/Projects'
 import Background from './Background'
+import { useAtom } from "jotai";
+import { EmailSubmitted } from "../pages/ContactSection";
 
 const Experience = (props) => {
   const { menuOpened } = props
@@ -18,6 +20,7 @@ const Experience = (props) => {
   const { viewport } = useThree()
   const data = useScroll()
 
+  const [emailSubmitted, setEmailSubmitted] = useAtom(EmailSubmitted)
   const isMobile = window.innerWidth < 768
   const responsiveRatio = viewport.width / 12;
   const roomScaleRatio = Math.max(0.5, Math.min(1.2 * responsiveRatio, 1.2));
@@ -76,11 +79,21 @@ const Experience = (props) => {
   })
 
   useEffect(() => {
-    setCharacterAnimation("Falling")
-    setTimeout(() => {
-      setCharacterAnimation(section === 0 ? "Typing" : "Standing")
-    }, 300)
+    if(section === 1 || section === 2) {
+      setCharacterAnimation("Landing")
+    }
+    if( section === 0 ) {
+      setTimeout(() => {
+        setCharacterAnimation(section === 0 ? "Typing" : "Standing")
+      }, 300)
+    }
   }, [section])
+
+  // useEffect(() => {
+  //   if(emailSubmitted) {
+  //     setCharacterAnimation("ThumbsUp")
+  //   }
+  // }, [emailSubmitted])
 
   return (
     <>
@@ -100,7 +113,7 @@ const Experience = (props) => {
           1: {
             y: -viewport.height + 0.7,
             x: isMobile ? 0.3 : 0,
-            z: 7,
+            z: 4,
             rotateX: 0,
             rotateY: isMobile ? - Math.PI / 2 : 0,
             rotateZ: 0,
@@ -116,7 +129,7 @@ const Experience = (props) => {
           3: {
             x: 0.3,
             y: -viewport.height * 3 + 1,
-            z: 8.5,
+            z: 7.5,
             rotateX: 0,
             rotateY: -Math.PI / 4,
             rotateZ: 0

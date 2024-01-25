@@ -8,6 +8,8 @@ import { motion } from "framer-motion-3d";
 export function Avatar(props) {
   const { animation, section, wireframe } = props
   const avatarRef = useRef()
+
+
   const { headFollow, cursorFollow } = useControls({
     headFollow: false,
     cursorFollow: false,
@@ -20,19 +22,22 @@ export function Avatar(props) {
   const { animations: standingAnimation } = useFBX("./animations/Standing.fbx")
   const { animations: fallingAnimation } = useFBX("./animations/Falling.fbx")
   const { animations: dancingAnimation } = useFBX("./animations/Dancing.fbx")
+  const { animations: landingAnimation } = useFBX("./animations/Landing.fbx")
+  const { animations: thumbsUpAnimation } = useFBX("./animations/ThumbsUp.fbx")
 
   typingAnimation[0].name = "Typing"
   standingAnimation[0].name = "Standing"
   fallingAnimation[0].name = "Falling"
   dancingAnimation[0].name = "Dancing"
+  landingAnimation[0].name = "Landing"
+  thumbsUpAnimation[0].name = "ThumbsUp"
 
   const anims = useMemo(
-    () => [typingAnimation[0], standingAnimation[0], fallingAnimation[0], dancingAnimation[0]],
+    () => [typingAnimation[0], standingAnimation[0], fallingAnimation[0], dancingAnimation[0], landingAnimation[0], thumbsUpAnimation[0]],
     []
   )
 
-  const { actions } = useAnimations(anims, avatarRef)
-
+  const { actions, mixer } = useAnimations(anims, avatarRef)
   useFrame((state) => {
     if (headFollow) {
       avatarRef.current.getObjectByName("Head").lookAt(state.camera.position)
@@ -44,10 +49,31 @@ export function Avatar(props) {
   })
 
   useEffect(() => {
+    if (animation === "Typing") actions["Standing"].reset().fadeOut(0.5)
     actions[animation].reset().fadeIn(0.5).play();
+    if (animation === "Landing") {
+      actions[animation].clampWhenFinished = true
+      actions[animation].loop = THREE.LoopOnce
+      mixer.addEventListener("finished", () => {
+        actions["Standing"].fadeIn(0.5).play();
+      })
+    }
+    // if (animation === "ThumbsUp") {
+    //   setTimeout(() => {
+    //     actions["Standing"].fadeOut(0.5)
+    //     actions[animation].clampWhenFinished = true
+    //     actions[animation].loop = THREE.LoopOnce
+    //     mixer.addEventListener("finished", () => {
+    //       actions["Standing"].fadeIn(0.5).play();
+    //     })
+    //   }, 1000)
+    //   // actions["Standing"].reset().fadeOut(0.5)
+    // }
+
     return () => {
       if (actions[animation]) {
         actions[animation].reset().fadeOut(0.5);
+        mixer.removeEventListener("finished")
       }
     };
   }, [animation]);
@@ -140,3 +166,5 @@ useFBX.preload("./animations/TypingSmall.fbx")
 useFBX.preload("./animations/Standing.fbx")
 useFBX.preload("./animations/Falling.fbx")
 useFBX.preload("./animations/Dancing.fbx")
+useFBX.preload("./animations/Landing.fbx")
+useFBX.preload("./animations/ThumbsUp.fbx")
