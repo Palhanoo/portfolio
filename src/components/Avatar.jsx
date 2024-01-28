@@ -4,10 +4,13 @@ import { useFrame } from "@react-three/fiber";
 import { useControls } from "leva";
 import * as THREE from "three";
 import { motion } from "framer-motion-3d";
+import { useAtom } from "jotai";
+import { EmailSubmitted } from "../pages/ContactSection";
 
 export function Avatar(props) {
   const { animation, section, wireframe } = props
   const avatarRef = useRef()
+  const [emailSubmitted, setEmailSubmitted] = useAtom(EmailSubmitted)
 
 
   const { headFollow, cursorFollow } = useControls({
@@ -80,11 +83,25 @@ export function Avatar(props) {
     };
   }, [animation]);
 
-  useEffect(() => {
-    Object.values(materials).forEach((material) => {
-      material.wireframe = wireframe
-    })
-  }, [wireframe])
+    useEffect(() => {
+    if(emailSubmitted) {
+      actions["Standing"].reset().fadeOut(0.5)
+      actions["ThumbsUp"].reset().fadeIn(0.5).play();
+        actions["ThumbsUp"].clampWhenFinished = true
+        actions["ThumbsUp"].loop = THREE.LoopOnce
+        mixer.addEventListener("finished", () => {
+          actions["ThumbsUp"].fadeOut(0.5)
+          actions["Standing"].reset().fadeIn(0.5).play();
+        })
+      setEmailSubmitted(false)
+    }
+  }, [emailSubmitted])
+
+  // useEffect(() => {
+  //   Object.values(materials).forEach((material) => {
+  //     material.wireframe = wireframe
+  //   })
+  // }, [wireframe])
 
   return (
     <motion.group

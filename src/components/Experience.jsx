@@ -9,8 +9,6 @@ import { animate, useMotionValue } from 'framer-motion'
 import { framerMotionConfig } from '../utils/config'
 import Projects from './Projects/Projects'
 import Background from './Background'
-import { useAtom } from "jotai";
-import { EmailSubmitted } from "../pages/ContactSection";
 
 const Experience = (props) => {
   const { menuOpened } = props
@@ -20,7 +18,6 @@ const Experience = (props) => {
   const { viewport } = useThree()
   const data = useScroll()
 
-  const [emailSubmitted, setEmailSubmitted] = useAtom(EmailSubmitted)
   const isMobile = window.innerWidth < 768
   const responsiveRatio = viewport.width / 12;
   const roomScaleRatio = Math.max(0.5, Math.min(1.2 * responsiveRatio, 1.2));
@@ -142,10 +139,10 @@ const Experience = (props) => {
         <Avatar
           animation={characterAnimation}
           section={section}
-          wireframe={section === 1}
+          // wireframe={section === 1}
         />
       </motion.group>
-      <Environment preset="sunset" />
+      <Environment preset="sunset" /> 
       <motion.group
         rotation-y={-Math.PI / 4}
         scale={[roomScaleRatio, roomScaleRatio, roomScaleRatio]}
