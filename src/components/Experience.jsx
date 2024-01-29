@@ -9,12 +9,14 @@ import { animate, useMotionValue } from 'framer-motion'
 import { framerMotionConfig } from '../utils/config'
 import Projects from './Projects/Projects'
 import Background from './Background'
+import { Celebi } from './Celebi'
 
 const Experience = (props) => {
   const { menuOpened } = props
   const characterContainerAboutRef = useRef()
   const [section, setSection] = useState(0)
   const [characterAnimation, setCharacterAnimation] = useState("Typing")
+  const [CelebiVisible, setCelebiVisible] = useState(false)
   const { viewport } = useThree()
   const data = useScroll()
 
@@ -76,10 +78,10 @@ const Experience = (props) => {
   })
 
   useEffect(() => {
-    if(section === 1 || section === 2) {
+    if (section === 1 || section === 2) {
       setCharacterAnimation("Landing")
     }
-    if( section === 0 ) {
+    if (section === 0) {
       setTimeout(() => {
         setCharacterAnimation(section === 0 ? "Typing" : "Standing")
       }, 300)
@@ -139,10 +141,10 @@ const Experience = (props) => {
         <Avatar
           animation={characterAnimation}
           section={section}
-          // wireframe={section === 1}
+        // wireframe={section === 1}
         />
       </motion.group>
-      <Environment preset="sunset" /> 
+      <Environment preset="sunset" />
       <motion.group
         rotation-y={-Math.PI / 4}
         scale={[roomScaleRatio, roomScaleRatio, roomScaleRatio]}
@@ -154,7 +156,7 @@ const Experience = (props) => {
           duration: 1.2
         }}
       >
-        <Room section={section} />
+        <Room section={section} setCelebiVisible={setCelebiVisible} />
         <group
           name="Empty"
           ref={characterContainerAboutRef}
@@ -184,6 +186,9 @@ const Experience = (props) => {
             />
           </mesh>
         </Float>
+        {CelebiVisible && (
+          <Celebi section={section} position={[4, 0, 0]} />
+        )}
         <Float>
           <mesh scale={[3, 3, 3]} position={[3, 1, -18]}>
             <sphereGeometry />
