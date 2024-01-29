@@ -3,7 +3,7 @@ import { motion } from 'framer-motion-3d'
 import { atom, useAtom } from 'jotai'
 import React from 'react'
 import Project from './Project'
-import {projects} from '../../constants/projects'
+import { projects } from '../../constants/projects'
 
 export const currentProjectAtom = atom(Math.floor(projects.length / 2))
 
@@ -15,7 +15,13 @@ const Projects = () => {
         <group position-y={-viewport.height * 2 + 1}>
             {
                 projects.map((project, idx) => (
-                    <motion.mesh key={"project_" + idx}
+                    <motion.mesh
+                        whileHover={currentProject === idx ?
+                            { scale: 1.3, transition: { duration: 0.2 } }
+                            :
+                            { scale: 1.1, transition: { duration: 0.2 } }
+                        }
+                        key={"project_" + idx}
                         position={[idx * 2.5, 0, -3]}
                         animate={{
                             // y: currentProject === idx ? 0.2 : 0,
@@ -25,7 +31,6 @@ const Projects = () => {
                             z: currentProject === idx ? -2 : -0.1,
                             rotateX: currentProject === idx ? 0 : -Math.PI / 3,
                             rotateZ: currentProject === idx ? 0 : - 0.1 * Math.PI / 3,
-
                         }}
                     >
                         <Project project={project} highlighted={idx === currentProject} />

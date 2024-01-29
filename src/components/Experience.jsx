@@ -70,13 +70,6 @@ const Experience = (props) => {
     // }
   })
 
-  const { animation } = useControls({
-    animation: {
-      value: "Typing",
-      options: ["Typing", "Standing", "Falling", "Dancing"],
-    }
-  })
-
   useEffect(() => {
     if (section === 1 || section === 2) {
       setCharacterAnimation("Landing")
@@ -195,7 +188,7 @@ const Experience = (props) => {
             <MeshDistortMaterial
               opacity={0.8}
               transparent
-              distort={0.4}
+              distort={0.8}
               speed={5}
               color="yellow"
             />
