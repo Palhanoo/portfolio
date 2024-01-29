@@ -8,7 +8,7 @@ const AboutSection = (props) => {
             <h1 className='text-3xl md:text-5xl font-extrabold leading-snug mt-8 md:mt-0'>
                 Hi, I'm
                 <br />
-                <p className="bg-white/30 px-1 italic backdrop-blur-xl">Bruno Palhano</p>
+                <p className="px-1 shadow-text hover:rotate-1">Bruno Palhano</p>
             </h1>
             <motion.p
                 initial={{
@@ -44,7 +44,7 @@ const AboutSection = (props) => {
                     delay: 2
                 }}
                 onClick={() => setSection(3)}
-                className={`bg-indigo-600 text-white py-4 px-8 rounded-lg font-bold text-lg mt-4 md:mt-16`}
+                className={`bg-indigo-600 text-white py-4 px-8 rounded-lg font-bold text-lg mt-4 md:mt-16 clickable`}
             >
                 Contact Me
             </motion.button>
