@@ -44,7 +44,7 @@ const AboutSection = (props) => {
                     delay: 2
                 }}
                 onClick={() => setSection(3)}
-                className={`bg-indigo-600 text-white py-4 px-8 rounded-lg font-bold text-lg mt-4 md:mt-16 clickable`}
+                className={`bg-indigo-600/55 hover:bg-indigo-600/80 transition-colors text-white py-4 px-8 rounded-lg font-bold text-lg mt-4 md:mt-16 clickable`}
             >
                 Contact Me
             </motion.button>

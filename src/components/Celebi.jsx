@@ -1,19 +1,20 @@
 import React, { useEffect, useRef } from "react";
 import { useGLTF, useAnimations } from "@react-three/drei";
 import gsap from "gsap";
-import * as THREE from "three";
 
 export function Celebi(props) {
     const group = useRef();
     const { nodes, materials, animations } = useGLTF("./models/Celebi.glb");
     const { actions, names } = useAnimations(animations, group);
+
     useEffect(() => {
         actions["Fly"].play()
     }, [])
 
     useEffect(() => {
-        props.section === 1 ? gsap.to(group.current.position, { x: 0, y: 0, z: 9, duration: 1 }) : gsap.to(group.current.position, { x: 8, y: 2, duration: 1 })
+        props.section === 1 ? gsap.to(group.current.position, { x: 0, y: 0, z: 9, duration: 1 }) : gsap.to(group.current.position, { x: 8, y: 2, z:4, duration: 1 })
     }, [props.section])
+    
     return (
         <group ref={group} {...props} dispose={null}>
             <group name="Scene">

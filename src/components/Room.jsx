@@ -6,7 +6,7 @@ import { animate, useMotionValue } from "framer-motion";
 import { useFrame } from "@react-three/fiber";
 
 export function Room(props) {
-    const { setCelebiVisible } = props
+    const { celebiVisible, setCelebiVisible } = props
     const mew = useRef()
     const mewSound = new Audio("./sounds/mew.mp3")
     const eeveeSound = new Audio("./sounds/eevee.mp3")
@@ -121,7 +121,7 @@ export function Room(props) {
                 material={textureMaterial}
                 position={[-1.613, 1.921, 0.172]}
                 rotation={[0, -0.623, 0]}
-                onClick={() => setCelebiVisible(true)}
+                onClick={() => setCelebiVisible(!celebiVisible)}
             />
             <mesh
                 castShadow

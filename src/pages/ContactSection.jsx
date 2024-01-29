@@ -49,7 +49,7 @@ const ContactSection = () => {
                             className='mt-1 text-red-500'
                             errors={state.errors}
                         />
-                        <button disabled={state.submitting} className="bg-indigo-600 text-white py-4 px-8 rounded-lg font-bold text-lg mt-8">
+                        <button disabled={state.submitting} className="clickable bg-indigo-600/55 hover:bg-indigo-600/80 transition-colors text-white py-4 px-8 rounded-lg font-bold text-lg mt-8">
                             Send Message
                         </button>
                     </form>

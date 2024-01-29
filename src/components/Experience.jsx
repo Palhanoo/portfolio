@@ -16,7 +16,7 @@ const Experience = (props) => {
   const characterContainerAboutRef = useRef()
   const [section, setSection] = useState(0)
   const [characterAnimation, setCharacterAnimation] = useState("Typing")
-  const [CelebiVisible, setCelebiVisible] = useState(false)
+  const [celebiVisible, setCelebiVisible] = useState(false)
   const { viewport } = useThree()
   const data = useScroll()
 
@@ -156,7 +156,7 @@ const Experience = (props) => {
           duration: 1.2
         }}
       >
-        <Room section={section} setCelebiVisible={setCelebiVisible} />
+        <Room section={section} setCelebiVisible={setCelebiVisible} celebiVisible={celebiVisible} />
         <group
           name="Empty"
           ref={characterContainerAboutRef}
@@ -186,7 +186,7 @@ const Experience = (props) => {
             />
           </mesh>
         </Float>
-        {CelebiVisible && (
+        {celebiVisible && (
           <Celebi section={section} position={[4, 0, 0]} />
         )}
         <Float>
