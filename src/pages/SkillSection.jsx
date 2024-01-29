@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { skills, languages } from '../constants/skills'
 
 const Title = ({ children }) => (
-    <h2 className="text-3xl md:text-5xl font-bold text-white">{children}</h2>
+    <h2 className={`${children === "Languages" ? "pt-8" : ""} text-3xl md:text-5xl font-bold text-white`}>{children}</h2>
 )
 
 const SkillData = ({ habilities, title }) => {
