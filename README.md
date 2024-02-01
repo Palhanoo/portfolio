@@ -1,8 +1,28 @@
-# React + Vite
+# Project Name
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Portfolio
 
-Currently, two official plugins are available:
+## Introduction
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This is my Portfolio, it utilises 3d Models, 3d animations and scroll-controller.
+
+you can check it online on: www.brunopalhano.com
+
+## Technologies and Libraries
+
+- JavaScript
+- ReactJS
+- ThreeJS
+- 3d Modelling
+- Framer-Motion
+
+## Development Status
+
+- [X] In active development
+- [ ] No longer actively developed
+- [ ] Completed
+
+## License
+
+This project is licensed under the [MIT License](LICENSE) - see the [LICENSE](LICENSE) file for details.
+
