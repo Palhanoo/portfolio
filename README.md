@@ -6,7 +6,7 @@ Portfolio
 
 This is my Portfolio, it utilises 3d Models, 3d animations and scroll-controller.
 
-you can check it online on: www.brunopalhano.com
+you can check it online on: brunopalhano.com
 
 ## Technologies and Libraries
 
