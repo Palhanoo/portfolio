@@ -1,10 +1,7 @@
-import React, { useEffect, useRef } from 'react'
-import { Image, Text } from '@react-three/drei'
-import { animate, useMotionValue } from 'framer-motion'
-import { useFrame } from '@react-three/fiber';
+import React, { useEffect, useRef, memo, useState } from 'react'
+import { Text } from '@react-three/drei'
 import { RoundedBox } from '@react-three/drei'
 import { useAtom } from 'jotai'
-import React, { memo, useState } from 'react'
 import { currentProjectAtom } from './Projects'
 import { MathUtils } from 'three'
 
