@@ -36,3 +36,29 @@ body {
     23px 0 20px -23px rgba(0, 0, 0, .8),
     inset 0 0 40px rgba(0, 0, 0, .1);
 }
+
+@layer utilities {
+  /* Hide scrollbar but keep functionality */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  /* 3D transformations */
+  .perspective-1200 {
+    perspective: 1200px;
+  }
+  
+  .transform-gpu {
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    will-change: transform;
+  }
+  
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+}

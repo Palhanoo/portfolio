@@ -1,4 +1,4 @@
-import { Environment, Float, MeshDistortMaterial, MeshWobbleMaterial, useScroll } from '@react-three/drei'
+import { Environment, Float, Text, useScroll } from '@react-three/drei'
 import React, { useEffect, useRef, useState } from 'react'
 import { Avatar } from './Avatar'
 import { Leva, useControls } from 'leva'
@@ -10,6 +10,136 @@ import { framerMotionConfig } from '../utils/config'
 import Projects from './Projects/Projects'
 import Background from './Background'
 import { Celebi } from './Celebi'
+import * as THREE from 'three'
+
+// Custom 3D shape for the skills section
+const TechSphere = ({ position, size = 1, color = "#ffffff", rotationSpeed = 0.01, hovered }) => {
+  const meshRef = useRef()
+  const wireframeRef = useRef()
+  
+  useFrame((state, delta) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.x += delta * rotationSpeed * 0.5
+      meshRef.current.rotation.y += delta * rotationSpeed
+      
+      if (hovered) {
+        meshRef.current.scale.lerp(new THREE.Vector3(1.2, 1.2, 1.2), 0.1)
+        if (wireframeRef.current) {
+          wireframeRef.current.material.opacity = THREE.MathUtils.lerp(wireframeRef.current.material.opacity, 1, 0.1)
+        }
+      } else {
+        meshRef.current.scale.lerp(new THREE.Vector3(1, 1, 1), 0.1)
+        if (wireframeRef.current) {
+          wireframeRef.current.material.opacity = THREE.MathUtils.lerp(wireframeRef.current.material.opacity, 0.4, 0.1)
+        }
+      }
+    }
+  })
+  
+  return (
+    <group position={position}>
+      <mesh ref={meshRef}>
+        <icosahedronGeometry args={[size, 1]} />
+        <meshPhysicalMaterial 
+          color={color}
+          roughness={0.5}
+          metalness={0.8}
+          envMapIntensity={1}
+          transmission={0.5}
+        />
+      </mesh>
+      <mesh ref={wireframeRef} scale={[1.02, 1.02, 1.02]}>
+        <icosahedronGeometry args={[size, 1]} />
+        <meshBasicMaterial 
+          color={color}
+          wireframe={true}
+          transparent={true}
+          opacity={0.4}
+        />
+      </mesh>
+    </group>
+  )
+}
+
+// Floating skill icon with text
+const SkillIcon = ({ position, text, color, Icon }) => {
+  const [hovered, setHovered] = useState(false)
+  const groupRef = useRef()
+  
+  useFrame((state, delta) => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y += delta * 0.2
+      
+      if (hovered) {
+        groupRef.current.scale.lerp(new THREE.Vector3(1.1, 1.1, 1.1), 0.1)
+      } else {
+        groupRef.current.scale.lerp(new THREE.Vector3(1, 1, 1), 0.1)
+      }
+    }
+  })
+  
+  return (
+    <Float 
+      speed={2} 
+      rotationIntensity={0.2} 
+      floatIntensity={0.5}
+      position={position}
+    >
+      <group 
+        ref={groupRef}
+        onPointerOver={() => setHovered(true)}
+        onPointerOut={() => setHovered(false)}
+      >
+        <TechSphere size={0.5} color={color} hovered={hovered} />
+        <Text
+          position={[0, 0.8, 0]}
+          fontSize={0.2}
+          color="white"
+          anchorX="center"
+          anchorY="middle"
+          outlineWidth={0.01}
+          outlineColor={hovered ? color : "#000000"}
+          // font="/fonts/Inter-Medium.woff"
+        >
+          {text}
+        </Text>
+      </group>
+    </Float>
+  )
+}
+
+// 3D Tech stack visualization
+const TechStack = () => {
+  return (
+    <group>
+      <SkillIcon 
+        position={[-3, 0, -2]} 
+        text="React" 
+        color="#61dafb" 
+      />
+      <SkillIcon 
+        position={[2.5, 1, -3]} 
+        text="Node.js" 
+        color="#8cc84b" 
+      />
+      <SkillIcon 
+        position={[0.5, -1.5, -0.5]} 
+        text="TypeScript" 
+        color="#3178c6" 
+      />
+      <SkillIcon 
+        position={[-1.5, 2, -4]} 
+        text="3D" 
+        color="#ff7f50" 
+      />
+      <SkillIcon 
+        position={[4, -0.5, -5]} 
+        text="Mobile" 
+        color="#a4c639" 
+      />
+    </group>
+  )
+}
 
 const Experience = (props) => {
   const { menuOpened } = props
@@ -51,23 +181,9 @@ const Experience = (props) => {
     state.camera.position.x = cameraPositionX.get()
     state.camera.lookAt(cameraLookAtX.get(), 0, 0)
 
-    //get the position
-    // const position = new THREE.Vector3()
     if (section === 0) {
       characterContainerAboutRef.current.getWorldPosition(characterGroup.current.position)
     }
-    // console.log([position.x, position.y, position.z]);
-
-    // //get the rotation
-    // const quaternion = new THREE.Quaternion();
-    // characterContainerAboutRef.current.getWorldQuaternion(quaternion);
-    // const euler = new THREE.Euler();
-    // euler.setFromQuaternion(quaternion, 'XYZ')
-    // console.log([euler.x, euler.y, euler.z])
-    // console.log(data.offset)
-    // if(data.offset > 0.32) {
-    //   setAni("Standing")
-    // }
   })
 
   useEffect(() => {
@@ -81,18 +197,11 @@ const Experience = (props) => {
     }
   }, [section])
 
-  // useEffect(() => {
-  //   if(emailSubmitted) {
-  //     setCharacterAnimation("ThumbsUp")
-  //   }
-  // }, [emailSubmitted])
-
   return (
     <>
       <Background />
       <motion.group
         animate={"" + section}
-        // scale={[roomScaleRatio, roomScaleRatio, roomScaleRatio]}
         transition={{
           duration: 0.8
         }}
@@ -128,13 +237,11 @@ const Experience = (props) => {
           }
         }}
         rotation={[-3.141592653589793, 0.9593981633974485, 3.141592653589793]}
-        // position={[1.4949088311754568, 0.6012, 2.6402240697322847]}
         ref={characterGroup}
       >
         <Avatar
           animation={characterAnimation}
           section={section}
-        // wireframe={section === 1}
         />
       </motion.group>
       <Environment preset="sunset" />
@@ -167,52 +274,22 @@ const Experience = (props) => {
         }}
         position={[0, isMobile ? -viewport.height : -1.5 * roomScaleRatio, -10]}>
         <directionalLight position={[-5, 3, 5]} intensity={0.4} />
-        <Float>
-          <mesh position={[1, -3, -15]} scale={[2, 2, 2]}>
-            <sphereGeometry />
-            <MeshDistortMaterial
-              opacity={0.8}
-              transparent
-              distort={0.4}
-              speed={4}
-              color="red"
-            />
-          </mesh>
-        </Float>
+        
+        {/* Replace the three meshes with our new tech stack */}
+        <TechStack />
+        
         {celebiVisible && (
           <Celebi section={section} position={[4, 0, 0]} />
         )}
-        <Float>
-          <mesh scale={[3, 3, 3]} position={[3, 1, -18]}>
-            <sphereGeometry />
-            <MeshDistortMaterial
-              opacity={0.8}
-              transparent
-              distort={0.8}
-              speed={5}
-              color="yellow"
-            />
-          </mesh>
-        </Float>
-        <Float>
-          <mesh scale={[1.4, 1.4, 1.4]} position={[-3, -1, -11]}>
-            <boxGeometry />
-            <MeshWobbleMaterial
-              opacity={0.8}
-              transparent
-              // distort={0.4}
-              factor={1}
-              speed={5}
-              color="blue"
-            />
-          </mesh>
-        </Float>
-
+        
+        {/* Add some ambient light to better illuminate the skill elements */}
+        <ambientLight intensity={0.4} />
+        <pointLight position={[0, 2, 5]} intensity={0.5} color="#ffffff" />
       </motion.group>
+      
       <spotLight castShadow intensity={10} position={[3, 5, 0]} />
-      {/* <OrbitControls /> */}
       <Leva hidden />
-      <Projects />
+      <Projects section={section} />
     </>
   )
 }
