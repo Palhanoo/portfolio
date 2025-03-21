@@ -77,7 +77,7 @@ const AboutSection = (props) => {
                     I create dynamic experiences across web, mobile, and cloud platforms.
                     From RESTful APIs to complex frontends, I'm passionate about 
                     building elegant solutions and exploring emerging technologies like AI
-                    and RAG systems.
+                    and Quantum Computing.
                 </p>
                 <motion.div
                     className="absolute -z-10 w-16 h-16 rounded-full bg-indigo-100/70 blur-lg"
