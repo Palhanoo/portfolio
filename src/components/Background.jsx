@@ -24,12 +24,12 @@ const ParticlesField = ({ count = 2000 }) => {
   
   useFrame(({ clock }) => {
     if (particlesRef.current) {
-      particlesRef.current.rotation.x = clock.getElapsedTime() * 0.03
-      particlesRef.current.rotation.y = clock.getElapsedTime() * 0.02
+      particlesRef.current.rotation.x = clock.getElapsedTime() * 0.01
+      particlesRef.current.rotation.y = clock.getElapsedTime() * 0.005
     }
     
     if (particlesMaterial.current) {
-      particlesMaterial.current.size = (1 + Math.sin(clock.getElapsedTime() * 0.3)) * 0.2
+      particlesMaterial.current.size = 0.2
     }
   })
   
@@ -139,10 +139,10 @@ const Background = () => {
 
     void main() {
       vec2 uv = vUv;
-      float n = noise(uv * 5.0 + uTime * 0.1);
+      float n = noise(uv * 2.0 + uTime * 0.05);
       
       // Create a nebula effect with color mixing
-      vec3 color = mix(uColor1, uColor2, smoothstep(0.2, 0.8, n + sin(uTime * 0.2) * 0.1));
+      vec3 color = mix(uColor1, uColor2, smoothstep(0.2, 0.8, n));
       float alpha = smoothstep(0.1, 0.9, n) * 0.3;
       
       gl_FragColor = vec4(color, alpha);
@@ -161,7 +161,7 @@ const Background = () => {
   return (
     <group>
       {/* Main background */}
-      <Sphere scale={[30, 30, 30]} args={[1, 64, 64]}>
+      <Sphere scale={[30, 30, 30]} args={[1, 32, 32]}>
         <meshBasicMaterial 
           ref={materialRef} 
           side={THREE.BackSide} 
@@ -171,7 +171,7 @@ const Background = () => {
       </Sphere>
       
       {/* Nebula effect layer */}
-      <Sphere scale={[25, 25, 25]} args={[1, 64, 64]}>
+      <Sphere scale={[25, 25, 25]} args={[1, 24, 24]}>
         <shaderMaterial
           ref={nebulaMaterial}
           fragmentShader={fragmentShader}
@@ -184,8 +184,8 @@ const Background = () => {
         />
       </Sphere>
       
-      {/* Add stars/particles */}
-      <ParticlesField count={1500} />
+      {/* Reduced particles count */}
+      <ParticlesField count={600} />
     </group>
   )
 }

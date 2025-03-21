@@ -13,76 +13,89 @@ import { Celebi } from './Celebi'
 import * as THREE from 'three'
 
 // Custom 3D shape for the skills section
-const TechSphere = ({ position, size = 1, color = "#ffffff", rotationSpeed = 0.01, hovered }) => {
+const TechSphere = ({ position, size = 1, color = "#ffffff", rotationSpeed = 0.01, hovered, lowPerformanceMode }) => {
   const meshRef = useRef()
   const wireframeRef = useRef()
   
   useFrame((state, delta) => {
     if (meshRef.current) {
-      meshRef.current.rotation.x += delta * rotationSpeed * 0.5
-      meshRef.current.rotation.y += delta * rotationSpeed
+      // Reduce rotation speed on low-performance devices
+      const speedMultiplier = lowPerformanceMode ? 0.5 : 1
+      meshRef.current.rotation.x += delta * rotationSpeed * 0.5 * speedMultiplier
+      meshRef.current.rotation.y += delta * rotationSpeed * speedMultiplier
       
       if (hovered) {
-        meshRef.current.scale.lerp(new THREE.Vector3(1.2, 1.2, 1.2), 0.1)
+        meshRef.current.scale.lerp(new THREE.Vector3(1.2, 1.2, 1.2), lowPerformanceMode ? 0.2 : 0.1)
         if (wireframeRef.current) {
-          wireframeRef.current.material.opacity = THREE.MathUtils.lerp(wireframeRef.current.material.opacity, 1, 0.1)
+          wireframeRef.current.material.opacity = THREE.MathUtils.lerp(wireframeRef.current.material.opacity, 1, lowPerformanceMode ? 0.2 : 0.1)
         }
       } else {
-        meshRef.current.scale.lerp(new THREE.Vector3(1, 1, 1), 0.1)
+        meshRef.current.scale.lerp(new THREE.Vector3(1, 1, 1), lowPerformanceMode ? 0.2 : 0.1)
         if (wireframeRef.current) {
-          wireframeRef.current.material.opacity = THREE.MathUtils.lerp(wireframeRef.current.material.opacity, 0.4, 0.1)
+          wireframeRef.current.material.opacity = THREE.MathUtils.lerp(wireframeRef.current.material.opacity, 0.4, lowPerformanceMode ? 0.2 : 0.1)
         }
       }
     }
   })
   
+  // Use simpler geometry and materials for low performance mode
+  const geometryDetail = lowPerformanceMode ? 0 : 1;
+  const wireframeVisible = !lowPerformanceMode;
+  
   return (
     <group position={position}>
       <mesh ref={meshRef}>
-        <icosahedronGeometry args={[size, 1]} />
+        <icosahedronGeometry args={[size, geometryDetail]} />
         <meshPhysicalMaterial 
           color={color}
           roughness={0.5}
           metalness={0.8}
-          envMapIntensity={1}
-          transmission={0.5}
+          envMapIntensity={lowPerformanceMode ? 0.5 : 1}
+          transmission={lowPerformanceMode ? 0.2 : 0.5}
         />
       </mesh>
-      <mesh ref={wireframeRef} scale={[1.02, 1.02, 1.02]}>
-        <icosahedronGeometry args={[size, 1]} />
-        <meshBasicMaterial 
-          color={color}
-          wireframe={true}
-          transparent={true}
-          opacity={0.4}
-        />
-      </mesh>
+      {wireframeVisible && (
+        <mesh ref={wireframeRef} scale={[1.02, 1.02, 1.02]}>
+          <icosahedronGeometry args={[size, geometryDetail]} />
+          <meshBasicMaterial 
+            color={color}
+            wireframe={true}
+            transparent={true}
+            opacity={0.4}
+          />
+        </mesh>
+      )}
     </group>
   )
 }
 
 // Floating skill icon with text
-const SkillIcon = ({ position, text, color, Icon }) => {
+const SkillIcon = ({ position, text, color, Icon, lowPerformanceMode }) => {
   const [hovered, setHovered] = useState(false)
   const groupRef = useRef()
   
   useFrame((state, delta) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.2
+      // Reduce animation speed on low-performance devices
+      const speedMultiplier = lowPerformanceMode ? 0.5 : 1
+      groupRef.current.rotation.y += delta * 0.2 * speedMultiplier
       
       if (hovered) {
-        groupRef.current.scale.lerp(new THREE.Vector3(1.1, 1.1, 1.1), 0.1)
+        groupRef.current.scale.lerp(new THREE.Vector3(1.1, 1.1, 1.1), lowPerformanceMode ? 0.2 : 0.1)
       } else {
-        groupRef.current.scale.lerp(new THREE.Vector3(1, 1, 1), 0.1)
+        groupRef.current.scale.lerp(new THREE.Vector3(1, 1, 1), lowPerformanceMode ? 0.2 : 0.1)
       }
     }
   })
   
+  // Adjust Float properties based on performance mode
+  const floatProps = lowPerformanceMode ? 
+    { speed: 1, rotationIntensity: 0.1, floatIntensity: 0.2 } : 
+    { speed: 2, rotationIntensity: 0.2, floatIntensity: 0.5 };
+  
   return (
     <Float 
-      speed={2} 
-      rotationIntensity={0.2} 
-      floatIntensity={0.5}
+      {...floatProps}
       position={position}
     >
       <group 
@@ -90,7 +103,7 @@ const SkillIcon = ({ position, text, color, Icon }) => {
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
       >
-        <TechSphere size={0.5} color={color} hovered={hovered} />
+        <TechSphere size={0.5} color={color} hovered={hovered} lowPerformanceMode={lowPerformanceMode} />
         <Text
           position={[0, 0.8, 0]}
           fontSize={0.2}
@@ -99,7 +112,6 @@ const SkillIcon = ({ position, text, color, Icon }) => {
           anchorY="middle"
           outlineWidth={0.01}
           outlineColor={hovered ? color : "#000000"}
-          // font="/fonts/Inter-Medium.woff"
         >
           {text}
         </Text>
@@ -109,40 +121,45 @@ const SkillIcon = ({ position, text, color, Icon }) => {
 }
 
 // 3D Tech stack visualization
-const TechStack = () => {
+const TechStack = ({ lowPerformanceMode }) => {
   return (
     <group>
       <SkillIcon 
         position={[-3, 0, -2]} 
         text="React" 
         color="#61dafb" 
+        lowPerformanceMode={lowPerformanceMode}
       />
       <SkillIcon 
         position={[2.5, 1, -3]} 
         text="Node.js" 
-        color="#8cc84b" 
+        color="#8cc84b"
+        lowPerformanceMode={lowPerformanceMode}
       />
       <SkillIcon 
         position={[0.5, -1.5, -0.5]} 
         text="TypeScript" 
         color="#3178c6" 
+        lowPerformanceMode={lowPerformanceMode}
       />
       <SkillIcon 
         position={[-1.5, 2, -4]} 
         text="3D" 
         color="#ff7f50" 
+        lowPerformanceMode={lowPerformanceMode}
       />
       <SkillIcon 
         position={[4, -0.5, -5]} 
         text="Mobile" 
         color="#a4c639" 
+        lowPerformanceMode={lowPerformanceMode}
       />
     </group>
   )
 }
 
 const Experience = (props) => {
-  const { menuOpened } = props
+  const { menuOpened, lowPerformanceMode = false } = props
   const characterContainerAboutRef = useRef()
   const [section, setSection] = useState(0)
   const [characterAnimation, setCharacterAnimation] = useState("Typing")
@@ -196,6 +213,10 @@ const Experience = (props) => {
       }, 300)
     }
   }, [section])
+
+  // Use lower intensity for lights in low performance mode
+  const lightIntensity = lowPerformanceMode ? 0.25 : 0.4;
+  const spotlightIntensity = lowPerformanceMode ? 5 : 10;
 
   return (
     <>
@@ -256,7 +277,7 @@ const Experience = (props) => {
           duration: 1.2
         }}
       >
-        <Room section={section} setCelebiVisible={setCelebiVisible} celebiVisible={celebiVisible} />
+        <Room section={section} setCelebiVisible={setCelebiVisible} celebiVisible={celebiVisible} lowPerformanceMode={lowPerformanceMode} />
         <group
           name="Empty"
           ref={characterContainerAboutRef}
@@ -273,23 +294,23 @@ const Experience = (props) => {
           y: section === 1 ? -viewport.height : (isMobile ? -viewport.height : -1.5 * roomScaleRatio),
         }}
         position={[0, isMobile ? -viewport.height : -1.5 * roomScaleRatio, -10]}>
-        <directionalLight position={[-5, 3, 5]} intensity={0.4} />
+        <directionalLight position={[-5, 3, 5]} intensity={lightIntensity} />
         
         {/* Replace the three meshes with our new tech stack */}
-        <TechStack />
+        <TechStack lowPerformanceMode={lowPerformanceMode} />
         
         {celebiVisible && (
           <Celebi section={section} position={[4, 0, 0]} />
         )}
         
         {/* Add some ambient light to better illuminate the skill elements */}
-        <ambientLight intensity={0.4} />
-        <pointLight position={[0, 2, 5]} intensity={0.5} color="#ffffff" />
+        <ambientLight intensity={lightIntensity} />
+        <pointLight position={[0, 2, 5]} intensity={lightIntensity} color="#ffffff" />
       </motion.group>
       
-      <spotLight castShadow intensity={10} position={[3, 5, 0]} />
+      <spotLight castShadow intensity={spotlightIntensity} position={[3, 5, 0]} />
       <Leva hidden />
-      <Projects section={section} />
+      <Projects section={section} lowPerformanceMode={lowPerformanceMode} />
     </>
   )
 }

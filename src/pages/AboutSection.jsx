@@ -66,14 +66,14 @@ const AboutSection = (props) => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 1.5 }}
             >
-                <p className="text-lg md:text-xl text-gray-600 mt-4 font-medium">
+                <p className="text-lg md:text-xl text-white mt-4 font-medium">
                     I'm a <RotatingTitles />
                     <br />
                     <span className="text-indigo-600">
                         Exploring cybersecurity through a Master's program
                     </span>
                 </p>
-                <p className="text-base text-gray-500 mt-2 max-w-lg">
+                <p className="text-base text-white mt-2 max-w-lg">
                     I create dynamic experiences across web, mobile, and cloud platforms.
                     From RESTful APIs to complex frontends, I'm passionate about 
                     building elegant solutions and exploring emerging technologies like AI

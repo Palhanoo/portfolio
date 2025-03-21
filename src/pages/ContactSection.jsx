@@ -24,8 +24,8 @@ const SocialLink = ({ icon, label, url }) => (
 const Particle = ({ delay = 0 }) => {
     const randomX = Math.random() * 100;
     const randomY = Math.random() * 100;
-    const size = Math.random() * 10 + 3;
-    const duration = Math.random() * 15 + 10;
+    const size = Math.random() * 8 + 3;
+    const duration = Math.random() * 10 + 10;
     
     return (
         <motion.div
@@ -38,15 +38,15 @@ const Particle = ({ delay = 0 }) => {
             }}
             initial={{ scale: 0, opacity: 0 }}
             animate={{ 
-                scale: [0, 1, 0.8, 1.2, 0],
-                opacity: [0, 0.7, 0.5, 0.2, 0],
-                y: [0, -30, -60, -100]
+                scale: [0, 1, 0],
+                opacity: [0, 0.5, 0],
+                y: [0, -50]
             }}
             transition={{ 
                 duration: duration,
                 delay: delay,
                 repeat: Infinity,
-                repeatDelay: Math.random() * 5
+                repeatDelay: Math.random() * 5 + 5
             }}
         />
     );
@@ -59,10 +59,10 @@ const ContactSection = () => {
     
     useEffect(() => {
         // Create particles on mount
-        const particleCount = 15;
+        const particleCount = 8;
         const newParticles = Array.from({ length: particleCount }, (_, i) => ({
             id: i,
-            delay: i * 0.4
+            delay: i * 0.6
         }));
         setParticles(newParticles);
     }, []);
