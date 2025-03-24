@@ -1,0 +1,6 @@
+# Allow all web crawlers
+User-agent: *
+Allow: /
+
+# Sitemap location (update when you have a sitemap)
+Sitemap: https://palhano.me/sitemap.xml 
