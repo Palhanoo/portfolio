@@ -1,6 +1,5 @@
-import React, { Suspense, useEffect, useState, useMemo, useCallback } from 'react'
+import React, { Suspense, useEffect, useState, useMemo, useCallback, lazy } from 'react'
 import { Canvas } from '@react-three/fiber'
-import Experience from './components/Experience'
 import { Scroll, ScrollControls } from '@react-three/drei'
 import Interface from './components/Interface'
 import ScrollManager from './components/ScrollManager'
@@ -10,11 +9,15 @@ import { framerMotionConfig } from './utils/config'
 import { Cursor } from './components/Cursor'
 import LoadingScreen from './components/LoadingScreen'
 
+// Dynamically import components for better code splitting
+const Experience = lazy(() => import('./components/Experience'))
+
 function App() {
   const [section, setSection] = useState(0)
   const [started, setStarted] = useState(false)
   const [menuOpened, setMenuOpened] = useState(false)
   const [lowPerformanceMode, setLowPerformanceMode] = useState(false)
+  const [assetsReady, setAssetsReady] = useState(false)
 
   // Function to set performance mode that can be accessed globally
   const setPerformanceMode = useCallback((isLowPerf) => {
@@ -39,9 +42,16 @@ function App() {
       setLowPerformanceMode(savedMode === 'low')
     } else {
       // Auto-detect if no preference saved
+      const networkInfo = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      const isSlow4G = networkInfo && 
+                      (networkInfo.effectiveType === 'slow-2g' || 
+                       networkInfo.effectiveType === '2g' || 
+                       networkInfo.effectiveType === '3g');
+                       
       const isLowPerfDevice = window.navigator.hardwareConcurrency <= 4 || 
                                window.innerWidth < 768 || 
-                               /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+                               /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                               isSlow4G;
       
       setLowPerformanceMode(isLowPerfDevice)
     }
@@ -50,6 +60,16 @@ function App() {
   useEffect(() => {
     setMenuOpened(false)
   }, [section])
+
+  // Set assets ready when starting the experience
+  useEffect(() => {
+    if (started) {
+      // Mark assets as ready when the loading screen starts to fade out
+      setTimeout(() => {
+        setAssetsReady(true);
+      }, 500);
+    }
+  }, [started]);
 
   // Configure performance-related settings based on device capability or user preference
   const performanceSettings = useMemo(() => ({
@@ -61,9 +81,19 @@ function App() {
       antialias: !lowPerformanceMode,
       alpha: true,
       powerPreference: lowPerformanceMode ? 'low-power' : 'default',
+      // Enable texture compression
+      physicallyCorrectLights: !lowPerformanceMode,
+      // Better memory management
+      logarithmicDepthBuffer: lowPerformanceMode,
     },
     flat: lowPerformanceMode, // Use flat shading in low performance mode
   }), [lowPerformanceMode])
+
+  const fallbackContent = useMemo(() => (
+    <div className="w-full h-full flex items-center justify-center">
+      <div className="text-2xl text-indigo-800">Loading experience...</div>
+    </div>
+  ), []);
 
   return (
     <>
@@ -75,27 +105,29 @@ function App() {
           duration: lowPerformanceMode ? framerMotionConfig.duration * 0.8 : framerMotionConfig.duration,
         }}
       >
-        <Canvas 
-          shadows={performanceSettings.shadows} 
-          dpr={performanceSettings.dpr}
-          camera={performanceSettings.camera}
-          gl={performanceSettings.gl}
-          flat={performanceSettings.flat}
-          performance={{ min: lowPerformanceMode ? 0.3 : 0.5 }}
-          frameloop={lowPerformanceMode ? "demand" : "always"}
-        >
-          <ScrollControls pages={4} damping={lowPerformanceMode ? 0.3 : 0.1}>
-            <ScrollManager section={section} onSectionChange={setSection} lowPerformanceMode={lowPerformanceMode} />
-            <Scroll>
-              <Suspense>
-                <Experience section={section} menuOpened={menuOpened} lowPerformanceMode={lowPerformanceMode} />
-              </Suspense>
-            </Scroll>
-            <Scroll html>
-              <Interface setSection={setSection} />
-            </Scroll>
-          </ScrollControls>
-        </Canvas>
+        {assetsReady && (
+          <Canvas 
+            shadows={performanceSettings.shadows} 
+            dpr={performanceSettings.dpr}
+            camera={performanceSettings.camera}
+            gl={performanceSettings.gl}
+            flat={performanceSettings.flat}
+            performance={{ min: lowPerformanceMode ? 0.3 : 0.5 }}
+            frameloop={lowPerformanceMode ? "demand" : "always"}
+          >
+            <ScrollControls pages={4} damping={lowPerformanceMode ? 0.3 : 0.1}>
+              <ScrollManager section={section} onSectionChange={setSection} lowPerformanceMode={lowPerformanceMode} />
+              <Scroll>
+                <Suspense fallback={null}>
+                  <Experience section={section} menuOpened={menuOpened} lowPerformanceMode={lowPerformanceMode} />
+                </Suspense>
+              </Scroll>
+              <Scroll html>
+                <Interface setSection={setSection} />
+              </Scroll>
+            </ScrollControls>
+          </Canvas>
+        )}
         <Menu onSectionChange={setSection} menuOpened={menuOpened} setMenuOpened={setMenuOpened} />
       </MotionConfig>
       <Cursor />

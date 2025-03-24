@@ -1,28 +1,75 @@
-# Project Name
+# Bruno Palhano's Portfolio
 
-Portfolio
+This is an interactive 3D portfolio showcasing Bruno Palhano's skills and projects.
 
-## Introduction
+## Features
 
-This is my Portfolio, it utilises 3d Models, 3d animations and scroll-controller.
+- Interactive 3D room and avatar
+- Responsive design for all devices
+- Performance-optimized for different device capabilities
+- Progressive asset loading for better network performance
 
-you can check it online on: brunopalhano.com
+## Development Setup
 
-## Technologies and Libraries
+```bash
+# Install dependencies
+npm install
 
-- JavaScript
-- ReactJS
-- ThreeJS
-- 3d Modelling
-- Framer-Motion
+# Run development server
+npm run dev
+```
 
-## Development Status
+## Performance Optimization
 
-- [X] In active development
-- [ ] No longer actively developed
-- [ ] Completed
+This portfolio uses various optimization techniques to ensure good performance across different devices and network conditions:
+
+### Automatic Performance Mode
+
+- On first load, users can choose between "Optimized Mode" or "High Quality"
+- The selection is saved for future visits
+- This can be changed later via the menu
+
+### Progressive Asset Loading
+
+The application implements progressive loading:
+1. First loads low-resolution models and essential animations
+2. Then loads remaining assets in the background
+3. Users can start interacting before all assets are fully loaded
+
+### Model Optimization
+
+For the best performance on slow networks, the portfolio uses optimized 3D models:
+
+1. Low-resolution models for slower devices
+2. Draco compression for smaller file sizes
+3. Texture compression for faster loading
+
+To generate optimized models, run:
+
+```bash
+# Install optimization dependencies
+npm install gltf-pipeline sharp fs-extra
+
+# Run optimization script
+npm run optimize-models
+```
+
+This will:
+- Create low-resolution versions of 3D models in `public/models/low/`
+- Generate compressed textures in `public/textures/low/`
+- Apply Draco compression for smaller file sizes
+
+## Deployment
+
+```bash
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE) - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 

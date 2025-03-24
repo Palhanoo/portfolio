@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useGLTF, useTexture, useVideoTexture } from "@react-three/drei";
 import * as THREE from 'three'
 import { motion } from "framer-motion-3d";
@@ -6,7 +6,7 @@ import { animate, useMotionValue } from "framer-motion";
 import { useFrame } from "@react-three/fiber";
 
 export function Room(props) {
-    const { celebiVisible, setCelebiVisible } = props
+    const { celebiVisible, setCelebiVisible, lowPerformanceMode } = props
     const mew = useRef()
     const mewSound = new Audio("./sounds/mew.mp3")
     const eeveeSound = new Audio("./sounds/eevee.mp3")
@@ -17,17 +17,110 @@ export function Room(props) {
         eeveeSound.play()
     }
     const { section } = props
-    const { nodes, materials } = useGLTF("./models/Room.glb");
-    const textureCode = useVideoTexture("./textures/Bake.mp4")
-    const textureCode2 = useVideoTexture("./textures/youtubeBake.mp4")
-    // textureCode.flipY = false
-    const texture = useTexture("./textures/RoomBaked.jpg")
-    texture.flipY = false
-    const textureMaterial = new THREE.MeshStandardMaterial({
-        map: texture,
+    
+    // Progressive asset loading
+    const [modelLoaded, setModelLoaded] = useState(false)
+    const [nodesAndMaterials, setNodesAndMaterials] = useState(null)
+    
+    // Load appropriate model based on performance settings
+    useEffect(() => {
+        const loadModel = async () => {
+            try {
+                // Use low-res model in low performance mode
+                const modelPath = lowPerformanceMode 
+                    ? "./models/low/Room_low.glb" 
+                    : "./models/Room.glb";
+                    
+                const result = await useGLTF(modelPath);
+                setNodesAndMaterials(result);
+                setModelLoaded(true);
+            } catch (err) {
+                console.error("Error loading room model:", err);
+            }
+        };
+        
+        loadModel();
+    }, [lowPerformanceMode]);
+    
+    // Progressively load textures
+    const [textureLoaded, setTextureLoaded] = useState(false)
+    const [roomTexture, setRoomTexture] = useState(null)
+    
+    useEffect(() => {
+        const loadTextures = async () => {
+            try {
+                // Use lower resolution texture in low performance mode
+                const texturePath = lowPerformanceMode 
+                    ? "./textures/low/RoomBaked.jpg" 
+                    : "./textures/RoomBaked.jpg";
+                    
+                const texture = await new Promise((resolve) => {
+                    const loader = new THREE.TextureLoader();
+                    loader.load(texturePath, resolve);
+                });
+                
+                texture.flipY = false;
+                setRoomTexture(texture);
+                setTextureLoaded(true);
+            } catch (err) {
+                console.error("Error loading textures:", err);
+            }
+        };
+        
+        loadTextures();
+    }, [lowPerformanceMode]);
+    
+    // Lazy load video textures only in high performance mode
+    const [videoTexturesLoaded, setVideoTexturesLoaded] = useState(false)
+    const [codeTexture, setCodeTexture] = useState(null)
+    const [codeTexture2, setCodeTexture2] = useState(null)
+    
+    useEffect(() => {
+        if (lowPerformanceMode) {
+            // In low performance mode, create simple colored materials instead of videos
+            const simpleTexture1 = new THREE.MeshBasicMaterial({ color: 0x2563eb });
+            const simpleTexture2 = new THREE.MeshBasicMaterial({ color: 0xe11d48 });
+            
+            setCodeTexture(simpleTexture1);
+            setCodeTexture2(simpleTexture2);
+            setVideoTexturesLoaded(true);
+            return;
+        }
+        
+        // In high performance mode, load video textures with delay
+        const loadVideoTextures = async () => {
+            try {
+                // Add a slight delay to prioritize other assets
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                const texture1 = useVideoTexture("./textures/Bake.mp4");
+                const texture2 = useVideoTexture("./textures/youtubeBake.mp4");
+                
+                setCodeTexture(texture1);
+                setCodeTexture2(texture2);
+                setVideoTexturesLoaded(true);
+            } catch (err) {
+                console.error("Error loading video textures:", err);
+                // Fallback to colored materials if videos fail to load
+                const simpleTexture1 = new THREE.MeshBasicMaterial({ color: 0x2563eb });
+                const simpleTexture2 = new THREE.MeshBasicMaterial({ color: 0xe11d48 });
+                
+                setCodeTexture(simpleTexture1);
+                setCodeTexture2(simpleTexture2);
+                setVideoTexturesLoaded(true);
+            }
+        };
+        
+        loadVideoTextures();
+    }, [lowPerformanceMode]);
+    
+    // Create materials only when textures are loaded
+    const textureMaterial = roomTexture ? new THREE.MeshStandardMaterial({
+        map: roomTexture,
         transparent: true,
         opacity: 1,
-    })
+    }) : null;
+    
     const glassGeometry = new THREE.BoxGeometry(1, 1, 1)
     const glassMaterial = new THREE.MeshStandardMaterial({
         color: 0x000000,
@@ -50,10 +143,17 @@ export function Room(props) {
     }, [section])
 
     useFrame(() => {
-        textureMaterial.opacity = textureOpacity.get()
+        if (textureMaterial) {
+            textureMaterial.opacity = textureOpacity.get()
+        }
         glassMaterial.opacity = glassOpacity.get()
-
     })
+
+    // Don't render until all essential assets are loaded
+    const isReady = modelLoaded && textureLoaded && videoTexturesLoaded;
+    if (!isReady || !nodesAndMaterials || !textureMaterial) return null;
+    
+    const { nodes, materials } = nodesAndMaterials;
 
     return (
         <motion.group {...props} dispose={null}
@@ -171,7 +271,9 @@ export function Room(props) {
                 position={[-0.368, 1.342, -1.22]}
                 rotation={[-Math.PI / 2, 0, 0.295]}
             >
-                <meshBasicMaterial map={textureCode} toneMapped={false} />
+                {typeof codeTexture === 'object' && codeTexture.isTexture 
+                    ? <meshBasicMaterial map={codeTexture} toneMapped={false} /> 
+                    : codeTexture}
             </mesh>
             <mesh
                 name="LaptopScreen"
@@ -182,7 +284,9 @@ export function Room(props) {
                 rotation={[-1.721, 0.129, -0.613]}
                 scale={[0.666, 0.703, 0.793]}
             >
-                <meshBasicMaterial map={textureCode2} toneMapped={false} />
+                {typeof codeTexture2 === 'object' && codeTexture2.isTexture 
+                    ? <meshBasicMaterial map={codeTexture2} toneMapped={false} /> 
+                    : codeTexture2}
             </mesh>
             <mesh
                 castShadow
@@ -226,5 +330,8 @@ export function Room(props) {
     );
 }
 
-useGLTF.preload("./models/Room.glb");
-useTexture.preload("./textures/RoomBaked.jpg")
+// Preload with low priority to let other assets load first
+useGLTF.preload("./models/low/Room_low.glb");
+useGLTF.preload("./models/Room.glb", { priority: 5 }); // Lower priority
+useTexture.preload("./textures/RoomBaked.jpg", { priority: 3 });
+// Video textures are loaded dynamically in the component
