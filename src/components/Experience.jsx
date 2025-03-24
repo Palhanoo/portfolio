@@ -1,5 +1,5 @@
 import { Environment, Float, Text, useScroll } from '@react-three/drei'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useMemo } from 'react'
 import { Avatar } from './Avatar'
 import { Leva, useControls } from 'leva'
 import { Room } from './Room'
@@ -20,19 +20,19 @@ const TechSphere = ({ position, size = 1, color = "#ffffff", rotationSpeed = 0.0
   useFrame((state, delta) => {
     if (meshRef.current) {
       // Reduce rotation speed on low-performance devices
-      const speedMultiplier = lowPerformanceMode ? 0.5 : 1
+      const speedMultiplier = lowPerformanceMode ? 0.25 : 1
       meshRef.current.rotation.x += delta * rotationSpeed * 0.5 * speedMultiplier
       meshRef.current.rotation.y += delta * rotationSpeed * speedMultiplier
       
       if (hovered) {
-        meshRef.current.scale.lerp(new THREE.Vector3(1.2, 1.2, 1.2), lowPerformanceMode ? 0.2 : 0.1)
+        meshRef.current.scale.lerp(new THREE.Vector3(1.2, 1.2, 1.2), lowPerformanceMode ? 0.1 : 0.1)
         if (wireframeRef.current) {
-          wireframeRef.current.material.opacity = THREE.MathUtils.lerp(wireframeRef.current.material.opacity, 1, lowPerformanceMode ? 0.2 : 0.1)
+          wireframeRef.current.material.opacity = THREE.MathUtils.lerp(wireframeRef.current.material.opacity, 1, lowPerformanceMode ? 0.1 : 0.1)
         }
       } else {
-        meshRef.current.scale.lerp(new THREE.Vector3(1, 1, 1), lowPerformanceMode ? 0.2 : 0.1)
+        meshRef.current.scale.lerp(new THREE.Vector3(1, 1, 1), lowPerformanceMode ? 0.1 : 0.1)
         if (wireframeRef.current) {
-          wireframeRef.current.material.opacity = THREE.MathUtils.lerp(wireframeRef.current.material.opacity, 0.4, lowPerformanceMode ? 0.2 : 0.1)
+          wireframeRef.current.material.opacity = THREE.MathUtils.lerp(wireframeRef.current.material.opacity, 0.4, lowPerformanceMode ? 0.1 : 0.1)
         }
       }
     }
@@ -48,10 +48,10 @@ const TechSphere = ({ position, size = 1, color = "#ffffff", rotationSpeed = 0.0
         <icosahedronGeometry args={[size, geometryDetail]} />
         <meshPhysicalMaterial 
           color={color}
-          roughness={0.5}
-          metalness={0.8}
-          envMapIntensity={lowPerformanceMode ? 0.5 : 1}
-          transmission={lowPerformanceMode ? 0.2 : 0.5}
+          roughness={lowPerformanceMode ? 0.8 : 0.5}
+          metalness={lowPerformanceMode ? 0.5 : 0.8}
+          envMapIntensity={lowPerformanceMode ? 0.3 : 1}
+          transmission={lowPerformanceMode ? 0 : 0.5}
         />
       </mesh>
       {wireframeVisible && (
@@ -77,20 +77,20 @@ const SkillIcon = ({ position, text, color, Icon, lowPerformanceMode }) => {
   useFrame((state, delta) => {
     if (groupRef.current) {
       // Reduce animation speed on low-performance devices
-      const speedMultiplier = lowPerformanceMode ? 0.5 : 1
+      const speedMultiplier = lowPerformanceMode ? 0.25 : 1
       groupRef.current.rotation.y += delta * 0.2 * speedMultiplier
       
       if (hovered) {
-        groupRef.current.scale.lerp(new THREE.Vector3(1.1, 1.1, 1.1), lowPerformanceMode ? 0.2 : 0.1)
+        groupRef.current.scale.lerp(new THREE.Vector3(1.1, 1.1, 1.1), lowPerformanceMode ? 0.1 : 0.1)
       } else {
-        groupRef.current.scale.lerp(new THREE.Vector3(1, 1, 1), lowPerformanceMode ? 0.2 : 0.1)
+        groupRef.current.scale.lerp(new THREE.Vector3(1, 1, 1), lowPerformanceMode ? 0.1 : 0.1)
       }
     }
   })
   
   // Adjust Float properties based on performance mode
   const floatProps = lowPerformanceMode ? 
-    { speed: 1, rotationIntensity: 0.1, floatIntensity: 0.2 } : 
+    { speed: 0.5, rotationIntensity: 0, floatIntensity: 0.1 } : 
     { speed: 2, rotationIntensity: 0.2, floatIntensity: 0.5 };
   
   return (
@@ -110,7 +110,7 @@ const SkillIcon = ({ position, text, color, Icon, lowPerformanceMode }) => {
           color="white"
           anchorX="center"
           anchorY="middle"
-          outlineWidth={0.01}
+          outlineWidth={lowPerformanceMode ? 0 : 0.01}
           outlineColor={hovered ? color : "#000000"}
         >
           {text}
@@ -120,40 +120,50 @@ const SkillIcon = ({ position, text, color, Icon, lowPerformanceMode }) => {
   )
 }
 
-// 3D Tech stack visualization
+// 3D Tech stack visualization - reduced number of elements in low performance mode
 const TechStack = ({ lowPerformanceMode }) => {
+  // In low performance mode, show fewer skills
   return (
     <group>
+      {/* Always show React */}
       <SkillIcon 
         position={[-3, 0, -2]} 
         text="React" 
         color="#61dafb" 
         lowPerformanceMode={lowPerformanceMode}
       />
+      
+      {/* Always show Node.js */}
       <SkillIcon 
         position={[2.5, 1, -3]} 
         text="Node.js" 
         color="#8cc84b"
         lowPerformanceMode={lowPerformanceMode}
       />
-      <SkillIcon 
-        position={[0.5, -1.5, -0.5]} 
-        text="TypeScript" 
-        color="#3178c6" 
-        lowPerformanceMode={lowPerformanceMode}
-      />
-      <SkillIcon 
-        position={[-1.5, 2, -4]} 
-        text="3D" 
-        color="#ff7f50" 
-        lowPerformanceMode={lowPerformanceMode}
-      />
-      <SkillIcon 
-        position={[4, -0.5, -5]} 
-        text="Mobile" 
-        color="#a4c639" 
-        lowPerformanceMode={lowPerformanceMode}
-      />
+      
+      {/* Only show in high performance mode */}
+      {!lowPerformanceMode && (
+        <>
+          <SkillIcon 
+            position={[0.5, -1.5, -0.5]} 
+            text="TypeScript" 
+            color="#3178c6" 
+            lowPerformanceMode={lowPerformanceMode}
+          />
+          <SkillIcon 
+            position={[-1.5, 2, -4]} 
+            text="3D" 
+            color="#ff7f50" 
+            lowPerformanceMode={lowPerformanceMode}
+          />
+          <SkillIcon 
+            position={[4, -0.5, -5]} 
+            text="Mobile" 
+            color="#a4c639" 
+            lowPerformanceMode={lowPerformanceMode}
+          />
+        </>
+      )}
     </group>
   )
 }
@@ -168,9 +178,9 @@ const Experience = (props) => {
   const data = useScroll()
 
   const isMobile = window.innerWidth < 768
-  const responsiveRatio = viewport.width / 12;
-  const roomScaleRatio = Math.max(0.5, Math.min(1.2 * responsiveRatio, 1.2));
-  const avatarScaleRatio = Math.max(0.5, Math.min(1 * responsiveRatio, 1));
+  const responsiveRatio = useMemo(() => viewport.width / 12, [viewport.width]);
+  const roomScaleRatio = useMemo(() => Math.max(0.5, Math.min(1.2 * responsiveRatio, 1.2)), [responsiveRatio]);
+  const avatarScaleRatio = useMemo(() => Math.max(0.5, Math.min(1 * responsiveRatio, 1)), [responsiveRatio]);
 
   const cameraPositionX = useMotionValue()
   const cameraLookAtX = useMotionValue()
@@ -215,16 +225,31 @@ const Experience = (props) => {
   }, [section])
 
   // Use lower intensity for lights in low performance mode
-  const lightIntensity = lowPerformanceMode ? 0.25 : 0.4;
-  const spotlightIntensity = lowPerformanceMode ? 5 : 10;
+  const lightIntensity = lowPerformanceMode ? 0.15 : 0.4;
+  const spotlightIntensity = lowPerformanceMode ? 3 : 10;
+  
+  // Only show Celebi in high performance mode
+  useEffect(() => {
+    setCelebiVisible(!lowPerformanceMode);
+  }, [lowPerformanceMode]);
+
+  // Memoize Background component for better performance
+  const backgroundComponent = useMemo(() => <Background lowPerformanceMode={lowPerformanceMode} />, [lowPerformanceMode]);
+
+  // Use more aggressive environment map settings for low performance
+  const environmentProps = useMemo(() => ({
+    preset: lowPerformanceMode ? "city" : "sunset",
+    background: !lowPerformanceMode,
+    blur: lowPerformanceMode ? 0.2 : 0.8,
+  }), [lowPerformanceMode]);
 
   return (
     <>
-      <Background />
+      {backgroundComponent}
       <motion.group
         animate={"" + section}
         transition={{
-          duration: 0.8
+          duration: lowPerformanceMode ? 0.4 : 0.8
         }}
         variants={{
           0: {
@@ -265,7 +290,7 @@ const Experience = (props) => {
           section={section}
         />
       </motion.group>
-      <Environment preset="sunset" />
+      <Environment {...environmentProps} />
       <motion.group
         rotation-y={-Math.PI / 4}
         scale={[roomScaleRatio, roomScaleRatio, roomScaleRatio]}

@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState, useMemo } from 'react'
+import React, { Suspense, useEffect, useState, useMemo, useCallback } from 'react'
 import { Canvas } from '@react-three/fiber'
 import Experience from './components/Experience'
 import { Scroll, ScrollControls } from '@react-three/drei'
@@ -16,25 +16,53 @@ function App() {
   const [menuOpened, setMenuOpened] = useState(false)
   const [lowPerformanceMode, setLowPerformanceMode] = useState(false)
 
-  // Detect low-performance device
+  // Function to set performance mode that can be accessed globally
+  const setPerformanceMode = useCallback((isLowPerf) => {
+    setLowPerformanceMode(isLowPerf)
+  }, [])
+
+  // Make the function available globally
   useEffect(() => {
-    // Check if the device is low-performance based on navigator properties or screen size
-    const isLowPerfDevice = window.navigator.hardwareConcurrency <= 4 || 
-                             window.innerWidth < 768 || 
-                             /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    window.setPerformanceMode = setPerformanceMode
     
-    setLowPerformanceMode(isLowPerfDevice)
+    return () => {
+      delete window.setPerformanceMode
+    }
+  }, [setPerformanceMode])
+
+  // Detect low-performance device and respect user preference
+  useEffect(() => {
+    // Check if user has a saved preference
+    const savedMode = localStorage.getItem('performanceMode')
+    
+    if (savedMode) {
+      setLowPerformanceMode(savedMode === 'low')
+    } else {
+      // Auto-detect if no preference saved
+      const isLowPerfDevice = window.navigator.hardwareConcurrency <= 4 || 
+                               window.innerWidth < 768 || 
+                               /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+      
+      setLowPerformanceMode(isLowPerfDevice)
+    }
   }, [])
 
   useEffect(() => {
     setMenuOpened(false)
   }, [section])
 
-  // Configure performance-related settings based on device capability
+  // Configure performance-related settings based on device capability or user preference
   const performanceSettings = useMemo(() => ({
     shadows: !lowPerformanceMode,
-    dpr: lowPerformanceMode ? [0.6, 1] : [1, 2],
+    dpr: lowPerformanceMode ? [0.5, 0.8] : [0.8, 1.5], // More aggressive DPR reduction
     camera: { position: [0, 3, 10], fov: 42 },
+    // Additional optimization settings
+    gl: {
+      antialias: !lowPerformanceMode,
+      alpha: true,
+      powerPreference: lowPerformanceMode ? 'low-power' : 'default',
+    },
+    flat: lowPerformanceMode, // Use flat shading in low performance mode
   }), [lowPerformanceMode])
 
   return (
@@ -42,16 +70,21 @@ function App() {
     <LoadingScreen started={started} setStarted={setStarted} />
       <MotionConfig
         transition={{
-          ...framerMotionConfig
+          ...framerMotionConfig,
+          // Reduce animation complexity in low performance mode
+          duration: lowPerformanceMode ? framerMotionConfig.duration * 0.8 : framerMotionConfig.duration,
         }}
       >
         <Canvas 
           shadows={performanceSettings.shadows} 
           dpr={performanceSettings.dpr}
           camera={performanceSettings.camera}
-          performance={{ min: 0.5 }}
+          gl={performanceSettings.gl}
+          flat={performanceSettings.flat}
+          performance={{ min: lowPerformanceMode ? 0.3 : 0.5 }}
+          frameloop={lowPerformanceMode ? "demand" : "always"}
         >
-          <ScrollControls pages={4} damping={lowPerformanceMode ? 0.2 : 0.1}>
+          <ScrollControls pages={4} damping={lowPerformanceMode ? 0.3 : 0.1}>
             <ScrollManager section={section} onSectionChange={setSection} lowPerformanceMode={lowPerformanceMode} />
             <Scroll>
               <Suspense>

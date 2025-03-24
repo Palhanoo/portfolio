@@ -4,11 +4,14 @@ import { gsap } from 'gsap'
 import React, { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 
-const ParticlesField = ({ count = 2000 }) => {
+const ParticlesField = ({ count = 2000, lowPerformanceMode = false }) => {
+  // Dramatically reduce particle count in low performance mode
+  const actualCount = lowPerformanceMode ? Math.min(200, count) : count;
+  
   const { viewport } = useThree()
   const positions = useMemo(() => {
-    const positions = new Float32Array(count * 3)
-    for (let i = 0; i < count; i++) {
+    const positions = new Float32Array(actualCount * 3)
+    for (let i = 0; i < actualCount; i++) {
       const theta = THREE.MathUtils.randFloatSpread(360)
       const phi = THREE.MathUtils.randFloatSpread(180)
       
@@ -17,19 +20,21 @@ const ParticlesField = ({ count = 2000 }) => {
       positions[i * 3 + 2] = 20 * Math.cos(theta)
     }
     return positions
-  }, [count])
+  }, [actualCount])
   
   const particlesMaterial = useRef()
   const particlesRef = useRef()
   
   useFrame(({ clock }) => {
     if (particlesRef.current) {
-      particlesRef.current.rotation.x = clock.getElapsedTime() * 0.01
-      particlesRef.current.rotation.y = clock.getElapsedTime() * 0.005
+      // Reduce rotation speed in low performance mode
+      const speedMultiplier = lowPerformanceMode ? 0.2 : 1;
+      particlesRef.current.rotation.x = clock.getElapsedTime() * 0.01 * speedMultiplier
+      particlesRef.current.rotation.y = clock.getElapsedTime() * 0.005 * speedMultiplier
     }
     
     if (particlesMaterial.current) {
-      particlesMaterial.current.size = 0.2
+      particlesMaterial.current.size = lowPerformanceMode ? 0.3 : 0.2
     }
   })
   
@@ -45,7 +50,7 @@ const ParticlesField = ({ count = 2000 }) => {
       </bufferGeometry>
       <pointsMaterial
         ref={particlesMaterial}
-        size={0.15}
+        size={lowPerformanceMode ? 0.3 : 0.15}
         sizeAttenuation
         transparent
         opacity={0.6}
@@ -55,7 +60,7 @@ const ParticlesField = ({ count = 2000 }) => {
   )
 }
 
-const Background = () => {
+const Background = ({ lowPerformanceMode = false }) => {
   const materialRef = useRef()
   const gradientMaterialRef = useRef()
   const data = useScroll()
@@ -83,7 +88,8 @@ const Background = () => {
       timeline.current.progress(data.scroll.current)
     }
     
-    if (nebulaMaterial.current) {
+    // Only update the nebula in high-performance mode
+    if (nebulaMaterial.current && !lowPerformanceMode) {
       nebulaMaterial.current.uniforms.uTime.value += 0.001
     }
   })
@@ -125,8 +131,21 @@ const Background = () => {
     uResolution: { value: new THREE.Vector2(1, 1) }
   }), [])
   
-  // Simplified nebula shader
-  const fragmentShader = `
+  // Simplified nebula shader for low performance mode
+  const fragmentShader = lowPerformanceMode ? `
+    uniform vec3 uColor1;
+    uniform vec3 uColor2;
+    varying vec2 vUv;
+
+    void main() {
+      vec2 uv = vUv;
+      // Simple gradient without animation or noise
+      vec3 color = mix(uColor1, uColor2, uv.y);
+      float alpha = 0.2;
+      
+      gl_FragColor = vec4(color, alpha);
+    }
+  ` : `
     uniform float uTime;
     uniform vec3 uColor1;
     uniform vec3 uColor2;
@@ -158,10 +177,14 @@ const Background = () => {
     }
   `
 
+  // Adjust sphere complexity based on performance mode
+  const sphereArgs = lowPerformanceMode ? [1, 16, 16] : [1, 32, 32];
+  const nebulaArgs = lowPerformanceMode ? [1, 12, 12] : [1, 24, 24];
+
   return (
     <group>
       {/* Main background */}
-      <Sphere scale={[30, 30, 30]} args={[1, 32, 32]}>
+      <Sphere scale={[30, 30, 30]} args={sphereArgs}>
         <meshBasicMaterial 
           ref={materialRef} 
           side={THREE.BackSide} 
@@ -170,8 +193,8 @@ const Background = () => {
         />
       </Sphere>
       
-      {/* Nebula effect layer */}
-      <Sphere scale={[25, 25, 25]} args={[1, 24, 24]}>
+      {/* Nebula effect layer - only in high performance mode or simplified in low */}
+      <Sphere scale={[25, 25, 25]} args={nebulaArgs}>
         <shaderMaterial
           ref={nebulaMaterial}
           fragmentShader={fragmentShader}
@@ -180,12 +203,15 @@ const Background = () => {
           transparent
           side={THREE.BackSide}
           depthWrite={false}
-          blending={THREE.AdditiveBlending}
+          blending={lowPerformanceMode ? THREE.NormalBlending : THREE.AdditiveBlending}
         />
       </Sphere>
       
-      {/* Reduced particles count */}
-      <ParticlesField count={600} />
+      {/* Particles - reduced count in low performance mode */}
+      <ParticlesField 
+        count={lowPerformanceMode ? 200 : 600} 
+        lowPerformanceMode={lowPerformanceMode} 
+      />
     </group>
   )
 }
